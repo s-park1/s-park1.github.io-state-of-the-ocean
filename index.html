@@ -3,198 +3,140 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A plain-language health check of six ocean vital signs, by Sungwon Park.">
-<title>State of the Ocean</title>
+<meta name="description" content="Sungwon Park: biomedical engineer and operations lead applying a biomedical approach to the ocean, Earth's largest and most heavily affected ecosystem.">
+<title>Sungwon Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* Layout: a single scroll that "descends" from sunlit surface to abyss; each vital sign is one depth band.
-     Deliberately single-theme: the light-to-dark descent is the design, so every color is set explicitly. */
+  /* Layout: a CV that opens like a patient chart. Dark hero with a vital-sign trace that turns into a wave,
+     then the thesis, the four-step method (each step links to a page), and the CV itself on paper white.
+     Same family as the rest of the site: Fraunces / Atkinson / Plex Mono, healthy green + warning coral. */
   :root{
-    --surface:#D8F0EC;
-    --sunlit:#8FCFC9;
-    --shelf:#5FA9AC;
-    --twilight:#2E6E7E;
-    --mid:#1E4E63;
-    --deep:#123C52;
-    --deeper:#0C2B3E;
     --abyss:#081E2C;
+    --deep:#123C52;
+    --twilight:#2E6E7E;
+    --sunlit:#8FCFC9;
+    --paper:#F4FAF8;
+    --panel:#E4F1EE;
     --ink:#0B2430;
+    --muted:#43606B;
     --foam:#EAF6F4;
     --healthy:#2F9E77;
     --warning:#E8663C;
-    --warning-ink:#B23A17;
-    --line:rgba(11,36,48,.18);
-    --line-light:rgba(234,246,244,.25);
+    --warning-ink:#C9512A;
+    --line:rgba(11,36,48,.16);
+    --line-light:rgba(234,246,244,.22);
     --font-display:'Fraunces',Georgia,'Times New Roman',serif;
     --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
     color-scheme:light;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto}
-    *,*::before,*::after{animation:none!important;transition:none!important}
-  }
-  body{
-    font-family:var(--font-body);
-    color:var(--ink);
-    background:var(--surface);
-    line-height:1.6;
-    font-size:17px;
-  }
-  h1,h2,h3,.big-stat{font-family:var(--font-display);text-wrap:balance}
-  a:focus-visible,summary:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;text-wrap:balance}
+  a{color:var(--twilight)}
+  a:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  .wrap{max-width:900px;margin:0 auto;padding-inline:20px}
 
-  /* depth ruler */
-  .ruler{
-    position:fixed;left:0;top:0;bottom:0;width:56px;
-    border-right:1px solid var(--line);
-    display:flex;flex-direction:column;justify-content:space-between;
-    padding:16px 0;z-index:10;pointer-events:none;
-    font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);opacity:.7;
-  }
-  .ruler span{transform:rotate(180deg);writing-mode:vertical-rl;margin:0 auto}
-  .ruler-fill{
-    position:fixed;left:0;top:0;width:56px;height:0;
-    background:linear-gradient(to bottom, rgba(47,158,119,.35), rgba(232,102,60,.45));
-    z-index:9;pointer-events:none;
-  }
-  @media(max-width:760px){.ruler,.ruler-fill{display:none}}
-
-  main{padding-left:56px}
-  @media(max-width:760px){main{padding-left:0}}
-
-  section{padding-block:88px;padding-inline:24px}
-  @media(max-width:500px){section{padding-block:64px;padding-inline:18px}}
-  .wrap{max-width:720px;margin:0 auto}
+  /* nav */
+  .nav{background:var(--abyss);color:var(--foam);font-size:.9rem;border-bottom:1px solid var(--line-light)}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding-block:14px}
+  .nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .nav a:hover{text-decoration:underline}
+  .nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .nav .here{opacity:.7;font-weight:400}
 
   /* hero */
-  .hero{
-    padding-block:120px 110px;
-    background:linear-gradient(to bottom,var(--surface) 55%, var(--sunlit));
-    position:relative;overflow:hidden;
-  }
-  .hero h1{
-    font-size:clamp(2.4rem,6.5vw,4.6rem);
-    font-weight:600;line-height:1.06;letter-spacing:-.015em;
-    max-width:16ch;
-  }
-  .hero .kicker{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:18px;max-width:52ch}
-  .hero .lede{font-size:1.2rem;margin-top:26px;max-width:56ch}
-  .hero .lede strong{color:var(--warning-ink)}
-  .byline{margin-top:18px;font-size:.95rem;opacity:.8}
-  .dive-cue{
-    margin-top:36px;display:inline-flex;align-items:center;gap:10px;
-    font-weight:700;text-decoration:none;color:var(--ink);
-    border-bottom:2px solid var(--ink);padding-bottom:2px;width:fit-content;
-  }
-  .wave{
-    position:absolute;bottom:-2px;left:0;width:200%;height:70px;opacity:.5;
-    animation:drift 26s linear infinite;
-  }
-  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .hero{background:linear-gradient(to bottom,var(--abyss),var(--deep));color:var(--foam);padding-block:64px 0;overflow:hidden}
+  .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sunlit)}
+  .hero h1{font-size:clamp(2.6rem,7vw,4.4rem);line-height:1.02;margin-top:12px;letter-spacing:-.01em}
+  .hero .role{font-size:1.15rem;margin-top:12px;color:var(--sunlit);font-weight:700}
+  .hero .thesis{font-family:var(--font-display);font-size:clamp(1.4rem,3.4vw,2rem);line-height:1.25;margin-top:30px;max-width:24ch}
+  .hero .thesis em{font-style:normal;color:var(--warning)}
+  .hero .lede{margin-top:16px;max-width:60ch;opacity:.92}
+  .cta{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:26px}
+  .cta a{color:var(--foam);font-weight:700}
+  .trace{display:block;width:100%;height:110px;margin-top:40px}
+  .trace path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .trace .pulse{stroke:var(--warning);stroke-width:2.5;stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3.2s ease-out .3s forwards}
+  .trace .sea{fill:var(--paper);stroke:none}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion: reduce){.trace .pulse{animation:none;stroke-dashoffset:0}html{scroll-behavior:auto}}
 
-  /* how to read */
-  .howto{background:var(--sunlit)}
-  .howto h2{font-size:1.9rem;margin-bottom:14px}
-  .howto p{max-width:62ch}
-  .legend{display:flex;gap:28px;flex-wrap:wrap;margin-top:26px;font-weight:700}
-  .legend .chip{display:flex;align-items:center;gap:9px}
-  .dot{width:14px;height:14px;border-radius:50%}
-  .dot.h{background:var(--healthy)}
-  .dot.w{background:var(--warning)}
+  section{padding-block:56px 8px}
+  .sec-tag{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+  section h2{font-size:clamp(1.6rem,3.6vw,2.2rem);margin-bottom:14px}
+  p{max-width:66ch}
+  p + p{margin-top:12px}
 
-  /* depth bands */
-  .m1{background:linear-gradient(to bottom,var(--sunlit),var(--shelf))}
-  .m2{background:linear-gradient(to bottom,var(--shelf),var(--twilight));color:var(--foam)}
-  .m3{background:linear-gradient(to bottom,var(--twilight),var(--mid));color:var(--foam)}
-  .m4{background:linear-gradient(to bottom,var(--mid),var(--deep));color:var(--foam)}
-  .m5{background:linear-gradient(to bottom,var(--deep),var(--deeper));color:var(--foam)}
-  .m6{background:linear-gradient(to bottom,var(--deeper),var(--abyss));color:var(--foam)}
-  .dark .card{background:rgba(244,250,248,.06);border-color:var(--line-light)}
-  .dark .expander{border-color:var(--line-light)}
-  .dark svg text{fill:var(--foam)}
-  .dark a{color:var(--foam)}
+  /* vitals */
+  .vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px}
+  .vital{border-top:3px solid var(--warning-ink);padding-top:10px}
+  .vital .num{font-family:var(--font-display);font-size:2.1rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .vital .lbl{font-size:.92rem;color:var(--muted);margin-top:4px}
+  .cite{font-size:.85rem;color:var(--muted);margin-top:12px}
 
-  .metric-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-  .metric-head h2{font-size:clamp(1.7rem,3.4vw,2.3rem);font-weight:600}
-  .depth-tag{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75;font-weight:700}
-  .plain{font-size:1.05rem;opacity:.92;max-width:60ch;margin-bottom:30px}
+  /* method */
+  .method{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:24px}
+  .step{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px}
+  .step .n{font-family:var(--font-mono);font-size:.75rem;color:var(--muted);letter-spacing:.06em}
+  .step h3{font-size:1.25rem}
+  .step p{font-size:.95rem;color:var(--muted)}
+  .step .go{margin-top:auto;padding-top:8px;font-weight:700;color:var(--twilight);font-size:.92rem}
+  @media (prefers-reduced-motion: reduce){.mission{transition:none}}
 
-  .big-stat{
-    font-size:clamp(1.9rem,5vw,3rem);font-weight:700;line-height:1.14;
-    max-width:24ch;margin:6px 0 30px;
-  }
-  .big-stat em{font-style:normal;color:var(--warning)}
-  .m1 .big-stat em{color:var(--warning-ink)}
+  /* cv */
+  .cv{display:grid;grid-template-columns:1fr 280px;gap:40px;margin-top:10px}
+  @media(max-width:760px){.cv{grid-template-columns:1fr;gap:24px}}
+  .cv > *{min-width:0}
+  .job{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+  .job:first-of-type{margin-top:0}
+  .job h3{font-size:1.25rem}
+  .job .where{font-family:var(--font-mono);font-size:.8rem;color:var(--muted);margin-top:2px}
+  .job ul{padding-left:18px;margin-top:10px;display:grid;gap:7px}
+  .job li{max-width:62ch}
+  .side h3{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .side .block{background:var(--panel);border-radius:6px;padding:16px 18px}
+  .side .block + .block{margin-top:14px}
+  .side p,.side li{font-size:.95rem}
+  .side ul{list-style:none;display:grid;gap:5px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
 
-  .card{
-    background:rgba(244,250,248,.55);
-    border:1px solid var(--line);
-    border-radius:6px;padding:24px 24px 18px;margin-bottom:22px;
-  }
-  .card h3{font-size:1.05rem;margin-bottom:16px;font-weight:600}
-  .chart-note{font-size:.88rem;opacity:.8;margin-top:12px;max-width:62ch}
-  .chart{overflow-x:auto}
-  .chart svg{display:block;width:100%;min-width:520px;height:auto}
-  .bar-label{font-family:var(--font-body);font-size:13px;font-weight:700;fill:var(--ink)}
-  .bar-value{font-family:var(--font-display);font-size:15px;font-weight:700;fill:var(--ink);font-variant-numeric:tabular-nums}
+  .sources ol{padding-left:20px;display:grid;gap:6px;font-size:.9rem;max-width:66ch}
+  footer{margin-top:56px;background:var(--abyss);color:var(--foam);padding-block:32px}
+  footer a{color:var(--foam);font-weight:700}
 
-  .expander{border-top:1px solid var(--line);padding:14px 4px}
-  .expander summary{
-    cursor:pointer;font-weight:700;list-style:none;
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
-  }
-  .expander summary::-webkit-details-marker{display:none}
-  .expander summary::after{content:"+";font-family:var(--font-display);font-size:1.3rem;line-height:1}
-  .expander[open] summary::after{content:"–"}
-  .expander p{padding:12px 0 6px;max-width:62ch;opacity:.94}
-
-  .analogy{
-    border-left:4px solid var(--warning);
-    padding:6px 0 6px 18px;margin:26px 0 8px;
-    font-size:1.05rem;max-width:58ch;
-  }
-  .analogy b{display:block;margin-bottom:2px}
-
-  /* closing */
-  .closing{background:var(--abyss);color:var(--foam);padding-bottom:120px}
-  .closing h2{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:20px;max-width:20ch}
-  .closing p{max-width:60ch;margin-bottom:16px}
-  .surface-link{color:var(--foam);font-weight:700}
-  .sources{margin-top:44px;border-top:1px solid var(--line-light);padding-top:20px;font-size:.88rem;opacity:.8;max-width:66ch}
-  .sources h3{font-size:1rem;margin-bottom:10px}
-  .sources ul{list-style:none;display:grid;gap:6px}
-  .sources a{color:var(--foam)}
-  .sources .note{margin-top:14px}
-
-  /* site nav, shared across all three pages */
-  .site-nav{background:var(--abyss);color:var(--foam);font-size:.9rem;position:relative;z-index:11}
-  .site-nav .inner{max-width:860px;margin:0 auto;padding:14px 24px;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between}
-  .site-nav a{color:var(--foam);text-decoration:none;font-weight:700}
-  .site-nav a:hover{text-decoration:underline}
-  .site-nav .links{display:flex;gap:18px;flex-wrap:wrap}
-  .site-nav .here{opacity:.7;font-weight:400}
-  .mission-links{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:14px}
-  .mission-links a{color:var(--ink);font-weight:700}
+  .path{list-style:none;display:flex;flex-wrap:wrap;gap:6px 0;margin-top:36px;font-family:var(--font-mono);font-size:.8rem;counter-reset:ch}
+  .path li{counter-increment:ch;display:flex;align-items:center}
+  .path li::before{content:counter(ch);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--panel);color:var(--ink);font-weight:600;margin-right:8px}
+  .path li + li::after{content:none}
+  .path li:not(:last-child)::after{content:"→";margin:0 12px;color:var(--muted)}
+  .path a{color:var(--ink);text-decoration:none;font-weight:600}
+  .path a:hover{text-decoration:underline}
+  .feature{display:grid;gap:8px;margin-top:22px;background:linear-gradient(to bottom right,var(--deep),var(--abyss));color:var(--foam);border-radius:8px;padding:26px 24px;text-decoration:none}
+  .feature .n{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;color:var(--sunlit)}
+  .feature .t{font-family:var(--font-display);font-size:clamp(1.4rem,3.4vw,1.9rem);line-height:1.2}
+  .feature .go{font-weight:700;color:var(--warning)}
+  .feature:hover .go{text-decoration:underline}
+  .missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px;margin-top:22px}
+  .mission{display:grid;gap:8px;align-content:start;background:#fff;border:1px solid var(--line);border-left:4px solid var(--twilight);border-radius:6px;padding:18px 20px;text-decoration:none;color:var(--ink);transition:border-color .2s}
+  .mission:hover{border-color:var(--twilight)}
+  .mission .n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;color:var(--muted)}
+  .mission h3{font-size:1.2rem}
+  .mission p{font-size:.95rem}
+  .mission b{color:var(--twilight)}
 </style>
 </head>
 <body>
-<div class="ruler-fill" id="rulerFill"></div>
-<div class="ruler" aria-hidden="true">
-  <span>surface</span>
-  <span>sunlit zone</span>
-  <span>twilight zone</span>
-  <span>deep water</span>
-</div>
 
-<main id="top">
-<nav class="site-nav" aria-label="Site">
-  <div class="inner">
-    <a href="./">State of the Ocean</a>
+<nav class="nav" aria-label="Site">
+  <div class="wrap">
+    <span><strong>Sungwon Park</strong></span>
     <div class="links">
-      <span class="here">Vital signs</span>
+      <span class="here">Home</span>
+      <a href="vital-signs.html">Vital signs</a>
       <a href="missions.html">Mission 01: Lionfish</a>
       <a href="mission-nitrogen.html">Mission 02: Nitrogen</a>
       <a href="mission-deepsea.html">Mission 03: Deep seafloor</a>
@@ -203,336 +145,227 @@
   </div>
 </nav>
 
-<section class="hero">
+<header class="hero">
   <div class="wrap">
-    <p class="kicker">A plain-language health check from published measurements</p>
-    <h1>The ocean is running a fever. Here is its chart.</h1>
+    <span class="eyebrow">Biomedical engineer · Operations and AI systems</span>
+    <h1>Sungwon Park</h1>
+    <p class="role">Production and Operations Engineering Team Lead, OXOS Medical</p>
+    <p class="thesis">The ocean is a patient. It needs a <em>biomedical approach</em>.</p>
     <p class="lede">
-      You don't need a degree in oceanography to read a patient's vital signs.
-      This page walks through six of the ocean's: temperature, acidity, oxygen,
-      coral, sea level, and fish. Each one compares <strong>where it was</strong> with
-      <strong>where it is now</strong>. Every one of them is moving the wrong way.
+      I build regulated medical devices and the AI systems that keep their development on schedule.
+      I believe the same discipline that keeps a patient alive can help heal the largest living
+      system on Earth: measure carefully, diagnose honestly, treat precisely, and keep watching.
     </p>
-    <p class="byline">Created by Sungwon Park · Figures checked October 2026</p>
-    <a class="dive-cue" href="#howto">Begin the descent ↓</a>
-    <div class="mission-links">
-      <a href="missions.html">Mission 01: Finding the lionfish front →</a>
-      <a href="mission-nitrogen.html">Mission 02: From farm field to scallop bed →</a>
-      <a href="mission-deepsea.html">Mission 03: Measure the deep before we disturb it →</a>
-      <a href="mission-coral.html">Mission 04: Plant coral where it can live →</a>
+    <div class="cta">
+      <a href="#gap">Start the story ↓</a>
+      <a href="#cv">Skip to my CV ↓</a>
     </div>
   </div>
-  <svg class="wave" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0,35 C100,10 200,60 300,35 C400,10 500,60 600,35 C700,10 800,60 900,35 C1000,10 1100,60 1200,35 L1200,70 L0,70 Z" fill="#5FA9AC"/>
+  <svg class="trace" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true">
+    <path class="pulse" d="M0,60 L160,60 L180,60 L195,30 L210,92 L225,18 L240,60 L380,60 L395,40 L410,60 L560,60 L575,30 L590,92 L605,18 L620,60 L700,60 C760,40 820,80 880,60 C940,40 1000,80 1060,60 C1110,44 1160,72 1200,60"/>
+    <path class="sea" d="M0,110 L0,96 C120,86 240,104 360,96 C480,88 600,104 720,96 C840,88 960,104 1080,96 C1140,92 1180,98 1200,96 L1200,110 Z"/>
   </svg>
+</header>
+
+<main class="wrap">
+
+<ol class="path" aria-label="Story outline">
+  <li><a href="#gap">The gap</a></li>
+  <li><a href="#visible">Make it visible</a></li>
+  <li><a href="#method">The method</a></li>
+  <li><a href="#missions">Guided missions</a></li>
+  <li><a href="#cv">Who I am</a></li>
+</ol>
+
+<section id="gap">
+  <span class="sec-tag">Chapter 1 · The gap</span>
+  <h2>The ocean is our largest ecosystem, and the one we understand least</h2>
+  <p>
+    The ocean covers about 70% of the planet and holds 95% of its living space [1], [2]. It is also where
+    human activity leaves the widest footprint: in a single decade our cumulative impact on it nearly doubled,
+    and nearly 60% of the ocean saw those pressures rise [3].
+  </p>
+  <div class="vitals">
+    <div class="vital"><div class="num">95%</div><div class="lbl">Of Earth's living space is ocean</div></div>
+    <div class="vital"><div class="num">~2×</div><div class="lbl">Human impact on the ocean in one decade</div></div>
+    <div class="vital"><div class="num">~60%</div><div class="lbl">Of the ocean under increasing pressure</div></div>
+    <div class="vital"><div class="num">&lt;0.001%</div><div class="lbl">Of the deep seafloor ever seen by people</div></div>
+  </div>
+  <p class="cite">Sources [1]–[3].</p>
+  <p style="margin-top:18px">
+    Yet almost none of it is visible to the people whose choices shape it. Ocean science lives in papers,
+    agency datasets, and specialist language. That gap between what scientists know and what the public
+    understands has a real cost. When Florida's 2018 red tide hit, tourism losses reached an estimated
+    $2.7 billion, and some of the largest daily losses came when algae levels were low, driven by public
+    perception rather than the bloom itself [4]. People care about the ocean. What they're missing is a
+    clear picture of it.
+  </p>
 </section>
 
-<section class="howto" id="howto">
-  <div class="wrap">
-    <h2>How to read this page</h2>
-    <p>
-      Each measurement is shown two ways: a healthier baseline, roughly the pre-industrial
-      or mid-20th-century ocean, and the most recent measurement. The page gets darker as
-      you scroll, like diving deeper. Each stop explains one vital sign in everyday terms,
-      with "what does this mean?" sections if you want more.
-    </p>
-    <div class="legend">
-      <div class="chip"><span class="dot h"></span> Baseline (healthier past)</div>
-      <div class="chip"><span class="dot w"></span> Today (measured decline)</div>
-    </div>
+<section id="visible">
+  <span class="sec-tag">Chapter 2 · Make it visible</span>
+  <h2>First, show people the patient</h2>
+  <p>
+    Medicine starts with a chart anyone on the care team can read. So I built one for the ocean: six vital
+    signs, from temperature to fish stocks, each compared against a healthier past and explained in everyday
+    terms, with every figure sourced.
+  </p>
+  <a class="feature" href="vital-signs.html">
+    <span class="n">STATE OF THE OCEAN</span>
+    <span class="t">The ocean is running a fever. Here is its chart.</span>
+    <span class="go">Read the vital signs →</span>
+  </a>
+</section>
+
+<section id="method">
+  <span class="sec-tag">Chapter 3 · The method</span>
+  <h2>Then treat it like medicine treats a complex patient</h2>
+  <p>
+    A patient with several conditions at once isn't cured by treating the loudest symptom. Medicine has a
+    discipline for complex, failing systems, and each step has an ocean equivalent.
+  </p>
+  <div class="method">
+    <div class="step"><span class="n">MEASURE</span><h3>Take vital signs</h3><p>Know the healthy baseline and how far each sign has drifted.</p></div>
+    <div class="step"><span class="n">BASELINE</span><h3>Record before you operate</h3><p>Measure untouched places before anyone disturbs them.</p></div>
+    <div class="step"><span class="n">DIAGNOSE</span><h3>Find the real cause</h3><p>Test every suspect, so effort goes where it matters.</p></div>
+    <div class="step"><span class="n">TREAT AND MONITOR</span><h3>Act precisely, keep watching</h3><p>Target the response, then follow up and adjust.</p></div>
   </div>
 </section>
 
-<!-- 1. TEMPERATURE -->
-<section class="m1" id="temperature">
-  <div class="wrap">
-    <div class="metric-head"><h2>Temperature</h2><span class="depth-tag">Vital sign 1 of 6</span></div>
-    <p class="plain">How warm the ocean's surface water is, averaged across the whole planet.</p>
-    <p class="big-stat">The sea surface is about <em>1&nbsp;°C warmer</em> than before the industrial era, and recent years are the hottest ever measured.</p>
+<section id="missions">
+  <span class="sec-tag">Chapter 4 · Guided missions</span>
+  <h2>Four targeted problems, four mission plans</h2>
+  <p>
+    Each mission takes one ocean problem and plans the data collection needed to act on it: objectives,
+    tools, permits, logistics, success measures, and risks. They're planning concepts, written the way I
+    would plan an expedition.
+  </p>
+  <div class="missions">
+    <a class="mission" href="missions.html">
+      <span class="n">MISSION 01 · TREAT PRECISELY</span>
+      <h3>Find the lionfish front before it moves</h3>
+      <p><b>Problem:</b> invasive lionfish are spreading along Brazil's coast faster than they can be removed.</p>
+      <p><b>Plan:</b> predict where they'll settle next from seafloor structure, then test it at sea with AI-annotated video and eDNA.</p>
+    </a>
+    <a class="mission" href="mission-nitrogen.html">
+      <span class="n">MISSION 02 · DIAGNOSE</span>
+      <h3>From farm field to scallop bed</h3>
+      <p><b>Problem:</b> North Carolina's bay scallops collapsed, with nitrogen runoff among several suspects.</p>
+      <p><b>Plan:</b> follow nitrogen from land to estuary, measure each cause, and forecast what each bloom will cost.</p>
+    </a>
+    <a class="mission" href="mission-deepsea.html">
+      <span class="n">MISSION 03 · BASELINE</span>
+      <h3>Measure the deep before we disturb it</h3>
+      <p><b>Problem:</b> decisions on deep-sea mining and trawling are moving faster than the evidence.</p>
+      <p><b>Plan:</b> build an open, independent baseline of what lives there and how it recovers.</p>
+    </a>
+    <a class="mission" href="mission-coral.html">
+      <span class="n">MISSION 04 · TREAT AND MONITOR</span>
+      <h3>Plant coral where it can live</h3>
+      <p><b>Problem:</b> restored coral often dies in the next heatwave.</p>
+      <p><b>Plan:</b> screen for climate refuges, prove heat tolerance in the field, and act on heat forecasts before damage.</p>
+    </a>
+  </div>
+</section>
 
-    <div class="card">
-      <h3>Global average sea surface warming since about 1900</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 150" role="img" aria-label="Baseline 0 degrees anomaly versus roughly plus 1 degree Celsius today">
-          <text x="0" y="26" class="bar-label">Early 1900s baseline</text>
-          <rect x="200" y="12" width="30" height="20" fill="#2F9E77"/>
-          <text x="240" y="28" class="bar-value">±0 °C</text>
-          <text x="0" y="86" class="bar-label">Today</text>
-          <rect x="200" y="72" width="330" height="20" fill="#E8663C"/>
-          <text x="540" y="88" class="bar-value">≈ +1 °C</text>
-          <text x="0" y="135" class="bar-label" opacity=".75">The ocean has absorbed over 90% of the extra heat trapped by greenhouse gases.</text>
-        </svg>
+<section id="cv">
+  <span class="sec-tag">Chapter 5 · Who I am</span>
+  <h2>The engineer behind it</h2>
+  <p>I build regulated medical devices and the systems that run their development: the same work of measuring, diagnosing, and acting precisely, applied in a field where the patient can be hurt.</p>
+  <div class="cv">
+    <div>
+      <div class="job">
+        <h3>Production and Operations Engineering Team Lead</h3>
+        <p class="where">OXOS Medical · Atlanta, GA · Current</p>
+        <ul>
+          <li>Lead a cross-functional team of electrical, mechanical, software, and quality engineers building OXOS's portable X-ray system.</li>
+          <li>Use AI tools and production data to run current manufacturing and plan production for the next-generation product.</li>
+        </ul>
+      </div>
+      <div class="job">
+        <h3>Verification and Validation Lead</h3>
+        <p class="where">OXOS Medical · MC2 portable X-ray imaging system</p>
+        <ul>
+          <li>Rebuilt the software release workflow with AI tools and the Ketryx quality platform, moving from one release every two months to one every three weeks.</li>
+          <li>Connected Ketryx, Jira, and CircleCI through their APIs so test results and traceability report automatically.</li>
+          <li>Leading a chain of AI agents that drafts requirements, test plans, and test cases from source code, with built-in checks against unverified or stale output.</li>
+          <li>Wrote Python automation for large requirements migrations and consolidated dozens of overlapping specifications into a small set of clean requirements.</li>
+          <li>Owned regulatory and quality work across US FDA and EU MDR requirements, ISO 13485, IEC 62304, and cybersecurity.</li>
+          <li>Built a machine-learning correction for electromagnetic tracking, validated against optical motion capture.</li>
+        </ul>
+      </div>
+      <div class="job">
+        <h3>Earlier engineering roles</h3>
+        <p class="where">Huxley Medical · Motus Nova · sonnen</p>
+        <ul>
+          <li>About six years in total across medical devices, rehabilitation technology, and energy systems.</li>
+        </ul>
+      </div>
+      <div class="job">
+        <h3>Independent ocean work</h3>
+        <p class="where">State of the Ocean · this site</p>
+        <ul>
+          <li>Built a public portal that explains six ocean health metrics as plain-language vital signs, with every figure sourced.</li>
+          <li>Wrote four mission concepts covering invasive species, nutrient runoff, deep-sea mining and trawling, and coral restoration, each with logistics, permits, success measures, and risks.</li>
+        </ul>
       </div>
     </div>
 
-    <div class="analogy">
-      <b>In everyday terms</b>
-      One degree sounds small, but it's the difference between you at 37&nbsp;°C and you at 38&nbsp;°C:
-      a low-grade fever, all the time, for an entire planet's worth of water.
-    </div>
-
-    <details class="expander">
-      <summary>Why does one degree matter so much?</summary>
-      <p>Water holds enormous amounts of heat, so warming the whole ocean by even a fraction of a degree takes a staggering amount of energy. Most marine animals are cold-blooded and tuned to narrow temperature ranges. Warming pushes species toward the poles, fuels stronger storms, and triggers marine heatwaves that can kill coral and shellfish in weeks.</p>
-    </details>
-    <details class="expander">
-      <summary>Where does this number come from?</summary>
-      <p>Millions of readings from ships, buoys, and satellites, combined by agencies like NASA, NOAA, and Copernicus. 2023 and 2024 set records for the warmest sea surface temperatures ever directly measured.</p>
-    </details>
-  </div>
-</section>
-
-<!-- 2. ACIDITY -->
-<section class="m2 dark" id="acidity">
-  <div class="wrap">
-    <div class="metric-head"><h2>Acidity</h2><span class="depth-tag">Vital sign 2 of 6</span></div>
-    <p class="plain">Seawater chemistry, measured as pH. Lower pH means more acidic water.</p>
-    <p class="big-stat">The ocean is roughly <em>30% more acidic</em> than it was two centuries ago, the fastest chemical shift in millions of years.</p>
-
-    <div class="card">
-      <h3>Surface ocean pH: small numbers, big change</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 190" role="img" aria-label="pH declining from about 8.2 pre-industrial to 8.04 in 2024">
-          <line x1="70" y1="20" x2="70" y2="140" stroke="rgba(234,246,244,.35)"/>
-          <line x1="70" y1="140" x2="660" y2="140" stroke="rgba(234,246,244,.35)"/>
-          <text x="10" y="34" class="bar-value">8.20</text>
-          <text x="10" y="144" class="bar-value">8.00</text>
-          <polyline points="90,32 300,60 480,86 640,116" fill="none" stroke="#E8663C" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="90" cy="32" r="6" fill="#2F9E77"/>
-          <circle cx="640" cy="116" r="6" fill="#E8663C"/>
-          <text x="76" y="168" class="bar-label">~1800 (pH ≈ 8.2)</text>
-          <text x="500" y="168" class="bar-label">2024 (pH 8.04)</text>
-        </svg>
+    <aside class="side">
+      <div class="block">
+        <h3>Education</h3>
+        <p><strong>B.S. Biomedical Engineering</strong><br>Georgia Institute of Technology<br>Summa Cum Laude<br>Minor in Cell and Molecular Biology</p>
+        <p style="margin-top:8px">Graduate-level coursework in cancer biology and biotechnology. Published a gene sequence in high school.</p>
       </div>
-      <p class="chart-note">pH is a compressed scale, like earthquake magnitude, so a drop of about 0.15 units means about 30% more acidity. Global mean surface pH fell from 8.11 in 1985 to 8.04 in 2024.</p>
-    </div>
-
-    <div class="analogy">
-      <b>In everyday terms</b>
-      Imagine a steady drip of soda water into every glass of water on Earth, forever.
-      Creatures that build shells, like oysters, crabs, corals, and tiny plankton, now build
-      them in water that slowly dissolves their building material.
-    </div>
-
-    <details class="expander">
-      <summary>What is pH, in one paragraph?</summary>
-      <p>pH measures how acidic or basic a liquid is, from 0 (very acidic, like battery acid) to 14 (very basic, like drain cleaner), with 7 as neutral. Seawater sits slightly basic, around 8. Because the scale is logarithmic, each small step is a big change in chemistry.</p>
-    </details>
-    <details class="expander">
-      <summary>Why is it happening?</summary>
-      <p>The ocean absorbs roughly a quarter to a third of the carbon dioxide we emit. That CO₂ reacts with seawater to form carbonic acid, the same fizz that makes soda tangy. It's a favor the ocean does for our climate, but it costs the ocean its own chemistry and removes the carbonate that shell-building animals depend on.</p>
-    </details>
-  </div>
-</section>
-
-<!-- 3. OXYGEN -->
-<section class="m3 dark" id="oxygen">
-  <div class="wrap">
-    <div class="metric-head"><h2>Oxygen</h2><span class="depth-tag">Vital sign 3 of 6</span></div>
-    <p class="plain">Dissolved oxygen: what every fish, crab, and whale-food organism breathes.</p>
-    <p class="big-stat">The ocean has lost about <em>2% of its oxygen</em> since 1960, and low-oxygen "dead zones" have multiplied many times over.</p>
-
-    <div class="card">
-      <h3>Two ways to see oxygen loss</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 210" role="img" aria-label="Oxygen down 2 percent since 1960; coastal dead zones grew from about 45 sites in the 1960s to roughly 700 today">
-          <text x="0" y="24" class="bar-label">Global dissolved oxygen (vs 1960)</text>
-          <rect x="0" y="34" width="600" height="18" fill="#2F9E77" opacity=".85"/>
-          <rect x="588" y="34" width="12" height="18" fill="#E8663C"/>
-          <text x="612" y="49" class="bar-value">−2%</text>
-          <text x="0" y="106" class="bar-label">Known coastal low-oxygen "dead zones"</text>
-          <rect x="0" y="118" width="40" height="18" fill="#2F9E77"/>
-          <text x="48" y="133" class="bar-value">~45 sites (1960s)</text>
-          <rect x="0" y="152" width="600" height="18" fill="#E8663C"/>
-          <text x="0" y="196" class="bar-value">~700 sites today, about a 15-fold increase</text>
-        </svg>
+      <div class="block">
+        <h3>Certification</h3>
+        <p>Certified SOLIDWORKS Professional</p>
       </div>
-      <p class="chart-note">2% sounds small until you remember it's 2% of all the breathable oxygen in the entire ocean, and the loss is concentrated where life is densest.</p>
-    </div>
-
-    <div class="analogy">
-      <b>In everyday terms</b>
-      It's like slowly lowering the oxygen in a crowded building. Most people cope at first,
-      but the weakest struggle, everyone is more stressed, and some rooms become impossible to stay in.
-    </div>
-
-    <details class="expander">
-      <summary>Why is the ocean losing oxygen?</summary>
-      <p>Warm water holds less oxygen, like a warm soda going flat faster. Warm surface water also floats on top of cold deep water, so less fresh oxygen mixes down. Near coasts, fertilizer runoff feeds algae blooms that die, sink, and rot, using up the oxygen that remains.</p>
-    </details>
-    <details class="expander">
-      <summary>What is a dead zone?</summary>
-      <p>An area where oxygen is too low for most animals to survive. Fish flee, crowding into smaller habitats, and animals that can't move, like clams and worms, die. The Gulf of Mexico hosts one of the largest, roughly the size of a small U.S. state most summers.</p>
-    </details>
-  </div>
-</section>
-
-<!-- 4. CORAL -->
-<section class="m4 dark" id="coral">
-  <div class="wrap">
-    <div class="metric-head"><h2>Coral reefs</h2><span class="depth-tag">Vital sign 4 of 6</span></div>
-    <p class="plain">The "rainforests of the sea," home to about a quarter of all marine species on under 1% of the seafloor.</p>
-    <p class="big-stat">Roughly <em>half the world's coral</em> has died since the 1950s, and the latest global bleaching event exposed <em>84% of reef area</em> to bleaching-level heat.</p>
-
-    <div class="card">
-      <h3>Living coral cover, then and now</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 150" role="img" aria-label="Coral cover today is roughly half of 1950s levels">
-          <text x="0" y="26" class="bar-label">1950s</text>
-          <rect x="90" y="12" width="520" height="22" fill="#2F9E77"/>
-          <text x="0" y="86" class="bar-label">Today</text>
-          <rect x="90" y="72" width="260" height="22" fill="#E8663C"/>
-          <text x="362" y="89" class="bar-value">≈ half remains</text>
-          <text x="0" y="136" class="bar-label" opacity=".8">The fourth global bleaching event (2023–2025) was the most widespread on record.</text>
-        </svg>
+      <div class="block">
+        <h3>Tools and skills</h3>
+        <div class="chips">
+          <span class="chip">AI agents and LLM workflows</span>
+          <span class="chip">API integration</span>
+          <span class="chip">Python</span>
+          <span class="chip">Dart / Flutter</span>
+          <span class="chip">Jira</span>
+          <span class="chip">Ketryx</span>
+          <span class="chip">CircleCI</span>
+          <span class="chip">Linux</span>
+          <span class="chip">FDA / EU MDR</span>
+          <span class="chip">ISO 13485</span>
+          <span class="chip">IEC 62304</span>
+          <span class="chip">SOLIDWORKS</span>
+        </div>
       </div>
-    </div>
-
-    <div class="analogy">
-      <b>In everyday terms</b>
-      Imagine half the world's cities had crumbled since your grandparents' childhood,
-      and the rest now caught fire every few summers. That's a reef's view of the last 70 years.
-    </div>
-
-    <details class="expander">
-      <summary>What is coral bleaching?</summary>
-      <p>Coral is an animal that hosts microscopic algae inside its body. The algae provide most of its food and all of its color. When water stays too hot for too long, the coral expels its algae, turns bone-white, and begins to starve. If the heat passes quickly it can recover. If heatwaves come back to back, as they now do, it dies.</p>
-    </details>
-    <details class="expander">
-      <summary>Why should someone far from the tropics care?</summary>
-      <p>Reefs shelter young fish we eat, buffer coastlines against storm waves, support tourism economies, and are a source of new medicines. Losing them is like losing infrastructure, pantry, and pharmacy at once for roughly a billion people.</p>
-    </details>
-  </div>
-</section>
-
-<!-- 5. SEA LEVEL -->
-<section class="m5 dark" id="sealevel">
-  <div class="wrap">
-    <div class="metric-head"><h2>Sea level</h2><span class="depth-tag">Vital sign 5 of 6</span></div>
-    <p class="plain">How high the ocean sits against our coastlines, driven by melting ice and by water expanding as it warms.</p>
-    <p class="big-stat">Seas have risen about <em>23&nbsp;cm since 1900</em>, and the rise is now more than <em>twice as fast</em> as in the 1990s.</p>
-
-    <div class="card">
-      <h3>Not just rising, but accelerating</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 160" role="img" aria-label="Rate of sea level rise: 2.1 millimeters per year in 1993 to 2002 versus 4.7 millimeters per year in 2015 to 2024">
-          <text x="0" y="26" class="bar-label">Rate, 1993–2002</text>
-          <rect x="190" y="12" width="150" height="20" fill="#2F9E77"/>
-          <text x="350" y="28" class="bar-value">2.1 mm / year</text>
-          <text x="0" y="86" class="bar-label">Rate, 2015–2024</text>
-          <rect x="190" y="72" width="336" height="20" fill="#E8663C"/>
-          <text x="536" y="88" class="bar-value">4.7 mm / year</text>
-          <text x="0" y="140" class="bar-label" opacity=".8">When the rate itself keeps growing, small yearly numbers compound into big coastal problems.</text>
-        </svg>
+      <div class="block">
+        <h3>Find me</h3>
+        <ul>
+          <li><a href="https://github.com/s-park1" target="_blank" rel="noopener">github.com/s-park1</a></li>
+          <li>Based in Atlanta, GA</li>
+        </ul>
       </div>
-    </div>
-
-    <div class="analogy">
-      <b>In everyday terms</b>
-      A few millimeters a year is a bathtub filling drop by drop while someone keeps opening the tap wider.
-      You don't notice day to day. Then a storm arrives on top of the higher water, and streets that never
-      flooded are underwater.
-    </div>
-
-    <details class="expander">
-      <summary>Why does warm water raise sea level?</summary>
-      <p>Two causes. Melting land ice from glaciers and the Greenland and Antarctic ice sheets adds new water to the ocean. And water expands as it warms, so a warming ocean takes up more room even without any new water.</p>
-    </details>
-    <details class="expander">
-      <summary>Who feels it first?</summary>
-      <p>Low-lying island nations, delta cities, and anyone on a coast during a high tide plus a storm. "Sunny-day flooding," where streets flood at high tide with no storm at all, is now routine in cities that rarely saw it decades ago.</p>
-    </details>
+    </aside>
   </div>
 </section>
 
-<!-- 6. FISH -->
-<section class="m6 dark" id="fish">
-  <div class="wrap">
-    <div class="metric-head"><h2>Fish populations</h2><span class="depth-tag">Vital sign 6 of 6</span></div>
-    <p class="plain">The share of the world's assessed fish stocks being caught faster than they can reproduce.</p>
-    <p class="big-stat">Overfished stocks have climbed from <em>10% in 1974</em> to nearly <em>4 in 10</em> by 2023.</p>
-
-    <div class="card">
-      <h3>Share of fish stocks fished beyond sustainable limits</h3>
-      <div class="chart">
-        <svg viewBox="0 0 700 150" role="img" aria-label="Overfished stocks rose from 10 percent in 1974 to about 38 percent in 2023">
-          <text x="0" y="26" class="bar-label">1974</text>
-          <rect x="70" y="12" width="60" height="22" fill="#2F9E77"/>
-          <text x="140" y="29" class="bar-value">10%</text>
-          <text x="0" y="86" class="bar-label">2023</text>
-          <rect x="70" y="72" width="226" height="22" fill="#E8663C"/>
-          <text x="306" y="89" class="bar-value">≈ 38%</text>
-          <text x="0" y="136" class="bar-label" opacity=".8">Ocean warming and oxygen loss squeeze the same populations from the other side.</text>
-        </svg>
-      </div>
-    </div>
-
-    <div class="analogy">
-      <b>In everyday terms</b>
-      Think of a savings account. Fish populations are the principal; the catch is the interest.
-      Sustainable fishing lives off the interest. Overfishing spends the principal, and as the account
-      shrinks, so does the interest.
-    </div>
-
-    <details class="expander">
-      <summary>What does "overfished" actually mean?</summary>
-      <p>A stock is overfished when it's caught faster than it can replace itself, so the population declines year after year. It doesn't mean the fish are gone. The good news: well-managed stocks recover, which makes this the most fixable vital sign on this page.</p>
-    </details>
-    <details class="expander">
-      <summary>Why it's more than a seafood problem</summary>
-      <p>Billions of people rely on the ocean as a major protein source, and hundreds of millions of livelihoods depend on fishing. Removing big predatory fish also rewires food webs, with effects that ripple down to plankton and up to seabirds and whales.</p>
-    </details>
-  </div>
-</section>
-
-<section class="closing">
-  <div class="wrap">
-    <h2>Six vital signs. One direction.</h2>
-    <p>
-      Warmer. More acidic. Less oxygen. Half the coral. Higher, faster-rising seas. Nearly four times
-      the overfishing. Each measurement comes from a different branch of science and different
-      instruments, and they all tell the same story, because they share the same causes:
-      the carbon dioxide we emit and the pressure we put on marine life.
-    </p>
-    <p>
-      That shared cause is also the hopeful part. These aren't six separate diseases needing six
-      cures. Cutting emissions slows the fever, the acid, the oxygen loss, the bleaching, and the
-      rising seas together, and fisheries have shown they can rebound when given the chance.
-      The patient is declining, but the diagnosis is clear and the treatment is known.
-    </p>
-    <p><strong>What would it take to act on this data?</strong> These mission concepts plan how to collect the data that turns a diagnosis into action: at sea, from the coast, and in the deep.</p>
-    <p><a class="surface-link" href="missions.html">Mission 01: finding the lionfish front →</a></p>
-    <p><a class="surface-link" href="mission-nitrogen.html">Mission 02: from farm field to scallop bed →</a></p>
-    <p><a class="surface-link" href="mission-deepsea.html">Mission 03: measure the deep before we disturb it →</a></p>
-    <p><a class="surface-link" href="mission-coral.html">Mission 04: plant coral where it can live →</a></p>
-    <p><a class="surface-link" href="#top">Return to the surface ↑</a></p>
-
-    <div class="sources">
-      <h3>Sources</h3>
-      <ul>
-        <li><a href="https://www.eea.europa.eu/en/analysis/indicators/global-and-european-sea-level-rise" target="_blank" rel="noopener">European Environment Agency: global sea level rise (about 23 cm since 1900)</a></li>
-        <li><a href="https://wmo.int/resources/wmo-bulletin/wmo-bulletin-vol-74-2-2025/future-sea-level-rise-certain-amount-and-speed-are-uncertain" target="_blank" rel="noopener">WMO: sea-level rise is accelerating</a></li>
-        <li><a href="https://www.nesdis.noaa.gov/news/worlds-fourth-mass-coral-bleaching-event-likely-ended-2025" target="_blank" rel="noopener">NOAA: fourth global coral bleaching event (2023–2025)</a></li>
-        <li><a href="https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html" target="_blank" rel="noopener">FAO: The State of World Fisheries and Aquaculture 2026</a></li>
-        <li><a href="https://ourworldindata.org/data-insights/just-over-one-third-of-the-worlds-assessed-fish-stocks-are-overexploited" target="_blank" rel="noopener">Our World in Data: share of overexploited fish stocks since 1974</a></li>
-      </ul>
-      <p class="note">Temperature, pH, and oxygen figures draw on NASA, NOAA, and Copernicus sea surface temperature records, EEA and IPCC ocean pH assessments (8.11 in 1985 to 8.04 in 2024), and peer-reviewed estimates of about 2% global oxygen loss since 1960. Values are rounded for clarity.</p>
-    </div>
-  </div>
+<section id="sources" class="sources">
+  <span class="sec-tag">Sources</span>
+  <ol>
+    <li><a href="https://oceanexplorer.noaa.gov/ocean-fact/explored/" target="_blank" rel="noopener">How much of the ocean has been explored?</a>, NOAA Ocean Exploration.</li>
+    <li><a href="https://naturalhistory.si.edu/education/teaching-resources/life-science/life-planet-ocean" target="_blank" rel="noopener">Life on Planet Ocean</a>, Smithsonian National Museum of Natural History.</li>
+    <li><a href="https://www.nceas.ucsb.edu/news/human-impacts-oceans-have-nearly-doubled-recent-decade" target="_blank" rel="noopener">Human impacts on oceans have nearly doubled in the recent decade</a>, NCEAS, on Halpern et al., <i>Scientific Reports</i>, 2019.</li>
+    <li><a href="https://www.sciencedirect.com/science/article/pii/S0301479723025999" target="_blank" rel="noopener">Non-linear impacts of harmful algae blooms on the coastal tourism economy</a>, <i>Journal of Environmental Management</i>.</li>
+  </ol>
 </section>
 
 </main>
 
-<script>
-  const fill = document.getElementById('rulerFill');
-  function onScroll(){
-    const h = document.documentElement;
-    const max = h.scrollHeight - h.clientHeight;
-    const pct = max > 0 ? h.scrollTop / max : 0;
-    if (fill) fill.style.height = (pct * 100) + 'vh';
-  }
-  document.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-</script>
+<footer>
+  <div class="wrap">
+    <p>Sungwon Park · Atlanta, GA · <a href="#gap">Back to the start ↑</a></p>
+  </div>
+</footer>
+
 </body>
 </html>
