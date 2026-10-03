@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mission concept by Sungwon Park: building an independent baseline for deep-sea mining and bottom trawling impacts, so decisions about the deep seafloor rest on evidence.">
+<title>Deep Seafloor Baseline Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a mission brief. Deep-water header band, then a paper-white dossier read top to bottom,
+     with a running "planning targets" rail and one diagram of the predict-and-test loop.
+     Same family as State of the Ocean: same faces, same healthy/warning pair. */
+  :root{
+    --abyss:#081E2C;
+    --deep:#123C52;
+    --twilight:#2E6E7E;
+    --sunlit:#8FCFC9;
+    --paper:#F4FAF8;
+    --panel:#E4F1EE;
+    --ink:#0B2430;
+    --muted:#43606B;
+    --foam:#EAF6F4;
+    --healthy:#2F9E77;
+    --warning:#C9512A;
+    --line:rgba(11,36,48,.16);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+  h1,h2,h3{font-family:var(--font-display);text-wrap:balance;font-weight:600}
+  a{color:var(--twilight)}
+  a:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  .wrap{max-width:780px;margin:0 auto;padding-inline:20px}
+
+  /* top nav */
+  .nav{background:var(--abyss);color:var(--foam);font-size:.9rem}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding-block:14px}
+  .nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .nav a:hover{text-decoration:underline}
+  .nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .nav .here{opacity:.7;font-weight:400}
+
+  /* header band */
+  header.band{background:linear-gradient(to bottom,var(--abyss),var(--deep));color:var(--foam);padding-block:64px 56px}
+  .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sunlit)}
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.08;margin-top:14px;max-width:18ch}
+  header .lede{font-size:1.15rem;margin-top:20px;max-width:58ch;opacity:.95}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--font-mono);font-size:.8rem;color:var(--sunlit)}
+
+  /* concept notice */
+  .notice{margin-top:-28px;position:relative}
+  .notice .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;font-size:.98rem}
+  .notice b{display:block;margin-bottom:4px}
+
+  section{padding-block:52px 8px}
+  section h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin-bottom:14px}
+  .sec-tag{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+  p{max-width:66ch}
+  p + p{margin-top:12px}
+
+  /* figures row */
+  .figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:22px}
+  .fig{border-top:3px solid var(--warning);padding-top:10px}
+  .fig .num{font-family:var(--font-display);font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .fig .lbl{font-size:.9rem;color:var(--muted);margin-top:4px}
+  .cite{font-size:.85rem;color:var(--muted);margin-top:12px}
+
+  /* callouts */
+  .callout{border-left:4px solid var(--healthy);background:var(--panel);padding:14px 18px;margin-top:20px;max-width:66ch;border-radius:0 6px 6px 0}
+  .callout b{display:block;margin-bottom:4px}
+
+  /* diagram */
+  .diagram{margin-top:24px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}
+  .diagram svg{display:block;width:100%;min-width:600px;height:auto}
+  .diagram .node-t{font-family:var(--font-body);font-size:15px;font-weight:700;fill:var(--ink)}
+  .diagram .node-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .diagram .center-t{font-family:var(--font-display);font-size:16px;font-weight:600;fill:var(--ink)}
+  .caption{font-size:.9rem;color:var(--muted);margin-top:10px;max-width:66ch}
+
+  /* phases */
+  .phases{display:grid;gap:16px;margin-top:22px}
+  .phase{display:grid;grid-template-columns:150px 1fr;gap:18px;border-top:1px solid var(--line);padding-top:16px}
+  .phase .when{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+  .phase .when b{display:block;font-family:var(--font-display);font-size:1.15rem;color:var(--ink);margin-bottom:2px}
+  .phase ul{padding-left:18px;display:grid;gap:6px}
+  .phase li{max-width:60ch}
+  @media(max-width:600px){.phase{grid-template-columns:1fr;gap:6px}}
+
+  /* targets */
+  .targets{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .target{background:var(--panel);border-radius:6px;padding:14px 16px}
+  .target .num{font-family:var(--font-mono);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .target .lbl{font-size:.9rem;color:var(--muted)}
+
+  /* tables */
+  .table-wrap{overflow-x:auto;margin-top:20px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+  th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td:first-child{font-weight:700;width:30%}
+
+  /* sources + footer */
+  .sources ol{padding-left:20px;display:grid;gap:6px;font-size:.92rem;max-width:66ch}
+  footer{margin-top:56px;background:var(--abyss);color:var(--foam);padding-block:36px}
+  footer a{color:var(--foam);font-weight:700}
+  footer p{max-width:60ch}
+</style>
+<style>
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+  .split .callout{margin-top:0}
+  .callout.warm{border-left-color:var(--warning)}
+  .baci-t{font-family:var(--font-body);font-size:14px;font-weight:700;fill:var(--ink)}
+  .baci-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .baci-h{font-family:var(--font-mono);font-size:12px;fill:var(--muted);letter-spacing:.06em}
+  .diagram svg.baci{min-width:520px;max-width:720px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site">
+  <div class="wrap">
+    <a href="./">State of the Ocean</a>
+    <div class="links">
+      <a href="./">Vital signs</a>
+      <a href="missions.html">Mission 01: Lionfish</a>
+      <a href="mission-nitrogen.html">Mission 02: Nitrogen</a>
+      <span class="here">Mission 03: Deep seafloor</span>
+      <a href="mission-coral.html">Mission 04: Coral</a>
+    </div>
+  </div>
+</nav>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Mission concept 03 · Deep-sea mining and bottom trawling</span>
+    <h1>Measure the deep before we disturb it.</h1>
+    <p class="lede">
+      Decisions about mining the deep seafloor for cobalt and other metals are being made now, and
+      bottom trawling already scrapes deep habitat every day. This mission builds the independent
+      baseline both debates are missing: what lives there, how it recovers, and how far the damage spreads.
+    </p>
+    <div class="meta">
+      <span>Region: Clarion-Clipperton Zone, Pacific, plus global trawl mapping</span>
+      <span>Planned length: ~24 days at sea</span>
+      <span>Author: Sungwon Park</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap notice">
+  <div class="box">
+    <b>This is a planning exercise, and it doesn't take a side.</b>
+    Whether to mine the deep sea is a contested question with serious arguments on both sides. This
+    mission doesn't answer it. It plans how to collect the evidence that any responsible answer needs,
+    and makes that evidence open to everyone.
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="context">
+  <span class="sec-tag">Where things stand</span>
+  <h2>A decision with a short clock and a thin baseline</h2>
+  <p>
+    The Clarion-Clipperton Zone, a vast abyssal plain in the Pacific between Hawaii and Mexico, is covered
+    in potato-sized nodules rich in cobalt, nickel, copper, and manganese. As of July 2026, the
+    International Seabed Authority still had not adopted rules for mining them, and 46 countries
+    had called for a moratorium or precautionary pause [1]. Meanwhile, NOAA found a U.S. company's
+    application to mine about 65,000 km² of the zone complete in May 2026 and moved it toward an
+    environmental impact statement [2].
+  </p>
+  <div class="figures">
+    <div class="fig"><div class="num">46</div><div class="lbl">Countries calling for a moratorium or pause, July 2026</div></div>
+    <div class="fig"><div class="num">0</div><div class="lbl">International mining rules adopted so far</div></div>
+    <div class="fig"><div class="num">~75%</div><div class="lbl">Of mined cobalt comes from one country, the DR Congo (2021)</div></div>
+    <div class="fig"><div class="num">44 yrs</div><div class="lbl">A 1970s test-mining track is still clearly visible</div></div>
+  </div>
+  <p class="cite">Sources [1], [2], [3], [4].</p>
+
+  <div class="split">
+    <div class="callout">
+      <b>The case for mining</b>
+      Supporters argue that nodules could supply metals for batteries and electrification while reducing
+      reliance on land mines concentrated in a few countries, which carry their own environmental and
+      human costs [3].
+    </div>
+    <div class="callout warm">
+      <b>The case for waiting</b>
+      Opponents argue that the deep sea is poorly studied, recovers on timescales of decades or longer,
+      and could suffer irreversible harm before anyone understands what is being lost [1], [4].
+    </div>
+  </div>
+</section>
+
+<section id="evidence">
+  <span class="sec-tag">What we know about recovery</span>
+  <h2>The deep heals slowly, when it heals at all</h2>
+  <p>
+    Two kinds of disturbance scrape the deep seafloor: mining collectors that strip nodules from abyssal
+    plains, and bottom trawls that drag across seamounts and slopes. The best long-term evidence for both
+    points the same way.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Disturbance</th><th>What was found</th></tr></thead>
+      <tbody>
+        <tr><td>Nodule test mining, 1979</td><td>Revisited in 2023, the track was still an 8 m-wide strip cleared of nodules. Small mobile animals had begun to return, but large animals that attach to the seafloor remained rare [4].</td></tr>
+        <tr><td>Seamount trawling, New Zealand</td><td>A seamount closed to trawling in 2001 showed no sign of recovery after 14 years; its community still resembled an actively trawled one. Deep corals grow about 1 mm a year [5].</td></tr>
+        <tr><td>Trawling and carbon</td><td>One study estimates 55–60% of the carbon trawls stir from sediments reaches the atmosphere within about nine years [6]. Other fisheries scientists dispute the assumptions behind that estimate [6], which is exactly the kind of gap better measurement can close.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px">
+    Cobalt also forms in crusts on seamount flanks, mostly between 800 and 2,500 m in the Pacific, growing
+    over millions of years [7]. Seamounts are also where deep-sea trawling concentrates, so the two
+    pressures can land on the same habitat.
+  </p>
+</section>
+
+<section id="approach">
+  <span class="sec-tag">The approach</span>
+  <h2>Before, after, control, impact</h2>
+  <p>
+    In medicine, you record a patient's vital signs before surgery so you can tell afterward what the
+    operation changed. Environmental science uses the same logic, called a before-after-control-impact
+    design. Measure a site before disturbance and a matching site that will stay untouched, then measure
+    both again later. Only the difference between them shows the true impact.
+  </p>
+
+  <div class="diagram" role="img" aria-label="A two-by-two grid. Rows are control site and impact site; columns are before and after. Only the impact site after disturbance shows change; the other three cells set the baseline it is compared against.">
+    <svg class="baci" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+      <text x="270" y="24" text-anchor="middle" class="baci-h">BEFORE</text>
+      <text x="490" y="24" text-anchor="middle" class="baci-h">AFTER</text>
+      <text x="80" y="104" text-anchor="middle" class="baci-t">Control site</text>
+      <text x="80" y="122" text-anchor="middle" class="baci-s">never disturbed</text>
+      <text x="80" y="214" text-anchor="middle" class="baci-t">Impact site</text>
+      <text x="80" y="232" text-anchor="middle" class="baci-s">mined or trawled</text>
+      <rect x="170" y="44" width="200" height="110" rx="6" fill="#E4F1EE" stroke="#2F9E77" stroke-width="1.5"/>
+      <text x="270" y="96" text-anchor="middle" class="baci-t">Baseline</text>
+      <text x="270" y="116" text-anchor="middle" class="baci-s">natural state</text>
+      <rect x="390" y="44" width="200" height="110" rx="6" fill="#E4F1EE" stroke="#2F9E77" stroke-width="1.5"/>
+      <text x="490" y="96" text-anchor="middle" class="baci-t">Natural change</text>
+      <text x="490" y="116" text-anchor="middle" class="baci-s">what time alone does</text>
+      <rect x="170" y="166" width="200" height="110" rx="6" fill="#E4F1EE" stroke="#2F9E77" stroke-width="1.5"/>
+      <text x="270" y="218" text-anchor="middle" class="baci-t">Baseline</text>
+      <text x="270" y="238" text-anchor="middle" class="baci-s">matched to control</text>
+      <rect x="390" y="166" width="200" height="110" rx="6" fill="#FBE3DA" stroke="#C9512A" stroke-width="1.5"/>
+      <text x="490" y="218" text-anchor="middle" class="baci-t">Impact + natural change</text>
+      <text x="490" y="238" text-anchor="middle" class="baci-s">the difference is the harm</text>
+    </svg>
+  </div>
+  <p class="caption">This mission collects the "before" column now, while most of the seafloor is still undisturbed. Once mining starts, the chance to measure it is gone.</p>
+</section>
+
+<section id="plan">
+  <span class="sec-tag">Mission plan</span>
+  <h2>Two arms: one at sea, one from orbit</h2>
+  <p>
+    The sea-going arm builds the mining baseline in the Clarion-Clipperton Zone. The remote arm maps where
+    bottom trawling happens over seamounts worldwide, using satellite vessel tracking and AI, so the ship's
+    time goes where data is thinnest.
+  </p>
+  <div class="phases">
+    <div class="phase">
+      <div class="when"><b>Before</b>6–9 months out</div>
+      <ul>
+        <li>Collect existing data: published baselines, contractor survey data made public through the Seabed Authority, and the 2023 revisit of the 1979 test track.</li>
+        <li>Research in the international seabed area is open to all states under the Law of the Sea [8], so no coastal-state permit is needed. The plan still coordinates with the Seabed Authority and license holders so sites aren't disturbed and results can be compared.</li>
+        <li>Choose paired sites: areas proposed for mining matched with untouched control areas of similar depth and nodule cover.</li>
+        <li>Remote arm: train an AI model on satellite vessel tracks to flag bottom-trawling behavior and map its footprint over seamounts, including those with cobalt crusts.</li>
+        <li>Plan a long transit (the zone is far from port), crew rotation, and data storage for the large volume of imagery.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>During</b>~24 days at sea</div>
+      <ul>
+        <li>Map paired sites with multibeam sonar and fly autonomous camera surveys to photograph the seafloor in high resolution.</li>
+        <li>Use AI annotation to count and identify animals, especially the large attached ones that recover slowest.</li>
+        <li>Take sediment cores for carbon, microbes, and eDNA, and water samples to detect species not seen on camera.</li>
+        <li>Deploy moored current and turbidity sensors to model how far a sediment plume from mining would drift.</li>
+        <li>Revisit the 1979 test track to extend the longest recovery record in the deep sea.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>After</b>First 90 days</div>
+      <ul>
+        <li>Publish the full baseline openly: images, species counts, sediment data, and plume model.</li>
+        <li>Estimate recovery timelines for each animal group, with honest uncertainty, and a plume footprint for different mining scenarios.</li>
+        <li>Release the global trawl-footprint map, highlighting seamounts where trawling and mining interest overlap.</li>
+        <li>Share results with every party in the decision: the Seabed Authority, national regulators through public comment, industry, and conservation groups.</li>
+        <li>Turn it into a public explainer and livestream material, so people can see the deep seafloor for themselves.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:36px;font-size:1.2rem">Planning targets</h3>
+  <p class="cite" style="margin-top:4px">Illustrative targets, sized against OceanX's 24-day Monsoon Rise and 10-day Cabo Verde expeditions.</p>
+  <div class="targets">
+    <div class="target"><div class="num">2 × 2</div><div class="lbl">Paired control and impact areas surveyed</div></div>
+    <div class="target"><div class="num">1</div><div class="lbl">Revisit of the 1979 test-mining track</div></div>
+    <div class="target"><div class="num">90 days</div><div class="lbl">From return to open baseline dataset</div></div>
+    <div class="target"><div class="num">Global</div><div class="lbl">Trawl-footprint map over seamounts</div></div>
+  </div>
+</section>
+
+<section id="success">
+  <span class="sec-tag">Measuring success</span>
+  <h2>How we'll know it worked</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Measure</th></tr></thead>
+      <tbody>
+        <tr><td>Is the baseline usable?</td><td>Control and impact sites are matched closely enough that a future resurvey could detect real change.</td></tr>
+        <tr><td>Do we know more about recovery?</td><td>Recovery estimates exist for each major animal group, with uncertainty ranges.</td></tr>
+        <tr><td>Is the trawl map credible?</td><td>AI-flagged trawling agrees with known fishing records where they exist.</td></tr>
+        <tr><td>Did the evidence reach the decision?</td><td>Data is cited by regulators, industry, or conservation groups, whichever side they take.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="risks">
+  <span class="sec-tag">Risks</span>
+  <h2>What could go wrong, and the plan for each</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Seen as picking a side</td><td>Open methods and data, a neutral advisory group, and results shared with all parties at the same time.</td></tr>
+        <tr><td>Long transit eats into survey time</td><td>Fly autonomous surveys around the clock; prioritize sites by data gaps.</td></tr>
+        <tr><td>Equipment loss at 4,000+ m</td><td>Redundant camera systems and spare sensors; mapping first so surveys avoid hazards.</td></tr>
+        <tr><td>Too much imagery to analyze</td><td>AI annotation on board, with scientists checking a sample of every batch.</td></tr>
+        <tr><td>Decision moves faster than the science</td><td>Release preliminary findings early, clearly labeled as preliminary.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="why">
+  <span class="sec-tag">Why it matters</span>
+  <h2>Informed consent for the planet</h2>
+  <p>
+    No surgeon operates without baseline vitals and informed consent. The deep seafloor is the largest
+    habitat on Earth, and much of it has never been seen. Whatever the world decides about mining and
+    trawling, it should decide knowing what is there, how it recovers, and what will be lost. Gathering
+    that evidence, and showing it plainly to everyone, is a job an independent exploration organization
+    is built to do.
+  </p>
+</section>
+
+<section id="sources" class="sources">
+  <span class="sec-tag">Sources</span>
+  <h2 style="font-size:1.4rem">References</h2>
+  <ol>
+    <li><a href="https://enb.iisd.org/international-seabed-authority-isa-council-31-2-summary" target="_blank" rel="noopener">ISA Council summary report, 13–31 July 2026</a>, Earth Negotiations Bulletin.</li>
+    <li><a href="https://www.globenewswire.com/news-release/2026/05/01/3285887/0/en/noaa-determines-tmc-usa-s-consolidated-deep-seabed-mining-application-is-in-full-compliance.html" target="_blank" rel="noopener">NOAA determines TMC USA's consolidated deep-seabed mining application is in full compliance</a>, company announcement, May 2026.</li>
+    <li><a href="https://ourworldindata.org/data-insights/most-of-the-worlds-cobalt-is-mined-in-the-democratic-republic-of-congo-but-refined-in-china" target="_blank" rel="noopener">Most of the world's cobalt is mined in the DR Congo but refined in China</a>, Our World in Data.</li>
+    <li><a href="https://news.liverpool.ac.uk/2025/03/26/long-term-impacts-of-deep-sea-mining-and-first-signs-of-biological-recovery-revealed/" target="_blank" rel="noopener">Long-term impacts of deep-sea mining and first signs of biological recovery revealed</a>, University of Liverpool, on <a href="https://www.nature.com/articles/s41586-025-08921-3" target="_blank" rel="noopener"><i>Nature</i>, 2025</a>.</li>
+    <li><a href="https://www.frontiersin.org/journals/marine-science/articles/10.3389/fmars.2019.00063/full" target="_blank" rel="noopener">Little evidence of benthic community resilience to bottom trawling on seamounts after 15 years</a>, <i>Frontiers in Marine Science</i>, 2019.</li>
+    <li><a href="https://news.mongabay.com/2024/01/carbon-catch-and-release-study-finds-bottom-trawlers-stir-up-seabed-co2/" target="_blank" rel="noopener">Carbon catch and release: bottom trawlers stir up seabed CO₂</a>, Mongabay, on Atwood et al. 2024, including critical responses.</li>
+    <li><a href="https://www.isa.org.jm/wp-content/uploads/2022/12/background.pdf" target="_blank" rel="noopener">Cobalt-rich ferromanganese crusts: background</a>, International Seabed Authority.</li>
+    <li>United Nations Convention on the Law of the Sea, Part XIII, Article 256 (marine scientific research in the Area).</li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Written by Sungwon Park as a mission-planning concept. Not affiliated with or endorsed by OceanX or any organization named here.</p>
+    <p style="margin-top:10px"><a href="mission-nitrogen.html">← Mission 02: from farm field to scallop bed</a> &nbsp;·&nbsp; <a href="./">The ocean's vital signs</a> &nbsp;·&nbsp; <a href="mission-coral.html">Mission 04: coral refuges →</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

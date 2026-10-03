@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mission concept by Sungwon Park: choosing coral restoration sites with the best chance of long-term survival, and detecting and preventing what kills coral once they're chosen.">
+<title>Coral Refuge Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a mission brief. Deep-water header band, then a paper-white dossier read top to bottom,
+     with a running "planning targets" rail and one diagram of the predict-and-test loop.
+     Same family as State of the Ocean: same faces, same healthy/warning pair. */
+  :root{
+    --abyss:#081E2C;
+    --deep:#123C52;
+    --twilight:#2E6E7E;
+    --sunlit:#8FCFC9;
+    --paper:#F4FAF8;
+    --panel:#E4F1EE;
+    --ink:#0B2430;
+    --muted:#43606B;
+    --foam:#EAF6F4;
+    --healthy:#2F9E77;
+    --warning:#C9512A;
+    --line:rgba(11,36,48,.16);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+  h1,h2,h3{font-family:var(--font-display);text-wrap:balance;font-weight:600}
+  a{color:var(--twilight)}
+  a:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  .wrap{max-width:780px;margin:0 auto;padding-inline:20px}
+
+  /* top nav */
+  .nav{background:var(--abyss);color:var(--foam);font-size:.9rem}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding-block:14px}
+  .nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .nav a:hover{text-decoration:underline}
+  .nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .nav .here{opacity:.7;font-weight:400}
+
+  /* header band */
+  header.band{background:linear-gradient(to bottom,var(--abyss),var(--deep));color:var(--foam);padding-block:64px 56px}
+  .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sunlit)}
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.08;margin-top:14px;max-width:18ch}
+  header .lede{font-size:1.15rem;margin-top:20px;max-width:58ch;opacity:.95}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--font-mono);font-size:.8rem;color:var(--sunlit)}
+
+  /* concept notice */
+  .notice{margin-top:-28px;position:relative}
+  .notice .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;font-size:.98rem}
+  .notice b{display:block;margin-bottom:4px}
+
+  section{padding-block:52px 8px}
+  section h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin-bottom:14px}
+  .sec-tag{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+  p{max-width:66ch}
+  p + p{margin-top:12px}
+
+  /* figures row */
+  .figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:22px}
+  .fig{border-top:3px solid var(--warning);padding-top:10px}
+  .fig .num{font-family:var(--font-display);font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .fig .lbl{font-size:.9rem;color:var(--muted);margin-top:4px}
+  .cite{font-size:.85rem;color:var(--muted);margin-top:12px}
+
+  /* callouts */
+  .callout{border-left:4px solid var(--healthy);background:var(--panel);padding:14px 18px;margin-top:20px;max-width:66ch;border-radius:0 6px 6px 0}
+  .callout b{display:block;margin-bottom:4px}
+
+  /* diagram */
+  .diagram{margin-top:24px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}
+  .diagram svg{display:block;width:100%;min-width:600px;height:auto}
+  .diagram .node-t{font-family:var(--font-body);font-size:15px;font-weight:700;fill:var(--ink)}
+  .diagram .node-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .diagram .center-t{font-family:var(--font-display);font-size:16px;font-weight:600;fill:var(--ink)}
+  .caption{font-size:.9rem;color:var(--muted);margin-top:10px;max-width:66ch}
+
+  /* phases */
+  .phases{display:grid;gap:16px;margin-top:22px}
+  .phase{display:grid;grid-template-columns:150px 1fr;gap:18px;border-top:1px solid var(--line);padding-top:16px}
+  .phase .when{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+  .phase .when b{display:block;font-family:var(--font-display);font-size:1.15rem;color:var(--ink);margin-bottom:2px}
+  .phase ul{padding-left:18px;display:grid;gap:6px}
+  .phase li{max-width:60ch}
+  @media(max-width:600px){.phase{grid-template-columns:1fr;gap:6px}}
+
+  /* targets */
+  .targets{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .target{background:var(--panel);border-radius:6px;padding:14px 16px}
+  .target .num{font-family:var(--font-mono);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .target .lbl{font-size:.9rem;color:var(--muted)}
+
+  /* tables */
+  .table-wrap{overflow-x:auto;margin-top:20px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+  th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td:first-child{font-weight:700;width:30%}
+
+  /* sources + footer */
+  .sources ol{padding-left:20px;display:grid;gap:6px;font-size:.92rem;max-width:66ch}
+  footer{margin-top:56px;background:var(--abyss);color:var(--foam);padding-block:36px}
+  footer a{color:var(--foam);font-weight:700}
+  footer p{max-width:60ch}
+</style>
+<style>
+  .funnel-t{font-family:var(--font-body);font-size:14px;font-weight:700;fill:var(--ink)}
+  .funnel-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .diagram svg.funnel{min-width:540px;max-width:720px;margin:0 auto}
+  .verdict{background:var(--abyss);color:var(--foam);border-radius:6px;padding:20px 22px;margin-top:22px}
+  .verdict b{display:block;font-family:var(--font-display);font-size:1.2rem;margin-bottom:6px}
+  .verdict p{max-width:64ch}
+  .verdict p + p{margin-top:10px}
+  td.tag{font-family:var(--font-mono);font-size:.8rem;white-space:nowrap;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site">
+  <div class="wrap">
+    <a href="./">State of the Ocean</a>
+    <div class="links">
+      <a href="./">Vital signs</a>
+      <a href="missions.html">Mission 01: Lionfish</a>
+      <a href="mission-nitrogen.html">Mission 02: Nitrogen</a>
+      <a href="mission-deepsea.html">Mission 03: Deep seafloor</a>
+      <span class="here">Mission 04: Coral</span>
+    </div>
+  </div>
+</nav>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Mission concept 04 · Coral restoration</span>
+    <h1>Plant coral where it can live.</h1>
+    <p class="lede">
+      Restoration fails when coral is planted into the same conditions that killed the reef. This mission
+      screens for the places most likely to survive the coming decades, proves it in the water, and then
+      watches those sites closely enough to stop the causes of coral death before they spread.
+    </p>
+    <div class="meta">
+      <span>Region: screened globally, piloted in the Western Indian Ocean</span>
+      <span>Planned length: screening year + ~14 days at sea</span>
+      <span>Author: Sungwon Park</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap notice">
+  <div class="box">
+    <b>This is a planning exercise that builds on OceanX's own coral work.</b>
+    In 2025, OceanX mapped seafloor complexity at Cabo Verde's Nola Seamounts to show where coral
+    communities can thrive, and documented coral gardens during its Around Africa expedition [1]. This
+    concept takes the next step: from finding where coral can live to deciding where to restore it.
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="lesson">
+  <span class="sec-tag">The hard lesson</span>
+  <h2>Planting more coral isn't enough</h2>
+  <p>
+    In 2023, a record marine heatwave hit the Florida Keys, home to one of the world's largest
+    restoration programs. At the restoration sites surveyed afterward, fewer than 22% of about 1,500
+    outplanted staghorn corals and fewer than 5% of about 1,000 elkhorn corals survived [2]. The
+    corals were healthy when planted. The site and the timing failed them.
+  </p>
+  <div class="figures">
+    <div class="fig"><div class="num">&lt;22%</div><div class="lbl">Of ~1,500 restored staghorn corals alive after the 2023 heatwave</div></div>
+    <div class="fig"><div class="num">&lt;5%</div><div class="lbl">Of ~1,000 restored elkhorn corals alive</div></div>
+    <div class="fig"><div class="num">84%</div><div class="lbl">Of the world's reef area hit by bleaching-level heat, 2023–2025</div></div>
+  </div>
+  <p class="cite">Sources [2], [3].</p>
+  <p style="margin-top:18px">
+    Florida's managers drew three lessons: favor slower-growing, sturdier species; protect genetic
+    diversity, especially heat-tolerant corals; and move corals before heat arrives, because moving them
+    during a heatwave adds stress [2]. This mission builds all three in from the start.
+  </p>
+</section>
+
+<section id="causes">
+  <span class="sec-tag">The diagnosis</span>
+  <h2>What kills coral, and how to catch it early</h2>
+  <p>
+    Bleaching happens when heat-stressed coral expels the algae that feed it. It can recover if the
+    heat passes, but repeated or prolonged stress kills it. Heat is the main threat, but most reefs die
+    from heat plus something else. Local stressors are the part a restoration team can actually control.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Cause</th><th>How it harms coral</th><th>Early warning</th><th>Local prevention</th></tr></thead>
+      <tbody>
+        <tr><td>Heat stress</td><td>Triggers bleaching; at 4 °C-weeks of accumulated heat, reef-wide bleaching is likely, and at 8, heat-sensitive corals start dying [4].</td><td>Satellite heat-stress alerts plus temperature loggers on site.</td><td>Choose cooler or heat-tolerant sites; shade or move nursery corals before heat peaks.</td></tr>
+        <tr><td>Disease</td><td>Outbreaks become more frequent under heat stress [5].</td><td>Repeat photo surveys with AI that flags tissue loss and lesions.</td><td>Quarantine new stock; remove or treat infected colonies early.</td></tr>
+        <tr><td>Runoff and sediment</td><td>Land-based pollution feeds algae blooms and clouds the water, cutting the light coral needs [5].</td><td>Turbidity and nutrient sensors; satellite water color.</td><td>Avoid river-fed sites; work with watershed partners (see <a href="mission-nitrogen.html">Mission 02</a>).</td></tr>
+        <tr><td>Overfishing</td><td>Fewer grazing fish lets seaweed overgrow coral and block young coral from settling.</td><td>Fish counts from video and eDNA.</td><td>Protect grazers through community fishing agreements and protected areas.</td></tr>
+        <tr><td>Acidification</td><td>Lower pH slows coral growth and weakens reef structure [5].</td><td>pH and carbonate sensors.</td><td>Prefer sites with natural chemistry buffering; favor sturdier species.</td></tr>
+        <tr><td>Storms and currents</td><td>Stronger storms break reefs; shifting currents change temperature and the supply of coral larvae [5].</td><td>Seafloor maps of exposure; current models.</td><td>Choose sheltered sites well connected to healthy reefs upstream.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="selection">
+  <span class="sec-tag">The approach</span>
+  <h2>Match the donor to the recipient</h2>
+  <p>
+    A transplant succeeds when the organ matches the patient and the patient's other conditions are under
+    control. Coral restoration works the same way. The mission screens sites the way a transplant team
+    screens recipients, in four narrowing steps.
+  </p>
+
+  <div class="diagram" role="img" aria-label="A funnel of four steps narrowing from top to bottom: global refugia map, regional shortlist, field verification, and restoration sites.">
+    <svg class="funnel" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20,10 L620,10 L580,74 L60,74 Z" fill="#E4F1EE" stroke="#2E6E7E" stroke-width="1.5"/>
+      <text x="320" y="38" text-anchor="middle" class="funnel-t">1 · Global refugia map</text>
+      <text x="320" y="58" text-anchor="middle" class="funnel-s">165,000 km² of reefs modeled as climate-resilient [6]</text>
+      <path d="M64,80 L576,80 L536,144 L104,144 Z" fill="#E4F1EE" stroke="#2E6E7E" stroke-width="1.5"/>
+      <text x="320" y="108" text-anchor="middle" class="funnel-t">2 · Regional shortlist</text>
+      <text x="320" y="128" text-anchor="middle" class="funnel-s">Score heat history, local stress, connectivity, partners</text>
+      <path d="M108,150 L532,150 L492,214 L148,214 Z" fill="#E4F1EE" stroke="#2E6E7E" stroke-width="1.5"/>
+      <text x="320" y="178" text-anchor="middle" class="funnel-t">3 · Field verification</text>
+      <text x="320" y="198" text-anchor="middle" class="funnel-s">Heat-tolerance tests, mapping, eDNA, loggers</text>
+      <path d="M152,220 L488,220 L452,284 L188,284 Z" fill="#DFF3EA" stroke="#2F9E77" stroke-width="1.5"/>
+      <text x="320" y="248" text-anchor="middle" class="funnel-t">4 · Restoration sites</text>
+      <text x="320" y="268" text-anchor="middle" class="funnel-s">Few, well-chosen, closely watched</text>
+    </svg>
+  </div>
+  <p class="caption">Each step is cheaper than the one below it, so expensive fieldwork only goes to sites that have already passed the desk screening.</p>
+
+  <p style="margin-top:20px">
+    A 2026 machine-learning study mapped more than 165,000 km² of climate-resilient reefs across 71
+    countries and sorted them into three kinds of refuge: places that avoid heat because of cool water,
+    places with heat-tolerant coral that resists it, and places that recover quickly afterward [6]. Step 1
+    starts from that map. Step 3 tests whether a site's coral really tolerates heat using a portable,
+    low-cost system that heats coral samples on the boat and measures their thermal limit in about a day [7].
+  </p>
+</section>
+
+<section id="africa">
+  <span class="sec-tag">Your question</span>
+  <h2>Is the African coast the best place to start?</h2>
+  <p>
+    Africa has two of the strongest candidates anywhere, but "the African coast" covers very different
+    reefs. Here's how the leading options compare.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Candidate</th><th>Refuge type</th><th>Strengths</th><th>Concerns</th></tr></thead>
+      <tbody>
+        <tr><td>Northern Mozambique Channel</td><td class="tag">Avoidance + recovery</td><td>Tides, currents, and eddies buffer heat and storms. It kept high coral diversity and sensitive species through the 1998 bleaching that devastated reefs farther north [8].</td><td>Fishing pressure, and protected areas that aren't always placed where they help most [8].</td></tr>
+        <tr><td>Northern Red Sea and Gulf of Aqaba</td><td class="tag">Resistance</td><td>Corals survived four straight years of intensifying heatwaves, 2021–2024, without mass bleaching [9]. A prime source of heat-tolerant coral.</td><td>Sporadic shallow bleaching suggests it may be nearing its limit; local pollution; waters shared by several countries [9].</td></tr>
+        <tr><td>Cabo Verde and West Africa</td><td class="tag">Deep habitat</td><td>OceanX's 2025 mapping identified where coral communities can thrive on the Nola Seamounts [1].</td><td>Those are deep seamount habitats, which need a different approach from shallow reef restoration.</td></tr>
+        <tr><td>Global leaders</td><td class="tag">All three types</td><td>Australia, the Bahamas, Cuba, Indonesia, and the Philippines hold more than half of the mapped climate-resilient reef area [6].</td><td>Outside Africa; existing programs and partners already active.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="verdict">
+    <b>Recommendation</b>
+    <p>
+      Don't commit to a coast first; let the screening decide. For a pilot, the northern Mozambique Channel
+      is the strongest African candidate: it combines natural heat protection with high diversity, and it
+      builds on the African research network OceanX formed during its 2025 Around Africa expedition, which
+      involved 69 scientists from 31 countries [1].
+    </p>
+    <p>
+      Treat the northern Red Sea differently: as a source of heat-tolerant genetics to study and protect,
+      not a place to expect unlimited resilience. Then compare the African shortlist honestly against the
+      global leaders before scaling up.
+    </p>
+  </div>
+</section>
+
+<section id="plan">
+  <span class="sec-tag">Mission plan</span>
+  <h2>Before, during, and after</h2>
+  <div class="phases">
+    <div class="phase">
+      <div class="when"><b>Before</b>Screening year</div>
+      <ul>
+        <li>Score candidate reefs on heat history, local stressors, connectivity to healthy reefs, and whether a local partner can run the site for a decade or more.</li>
+        <li>Partner with national research institutes, fishing communities, and protected-area managers; restoration without local stewards doesn't last.</li>
+        <li>Apply for research and coral-handling permits in each country, and plan any coral transport well ahead of the hot season.</li>
+        <li>Shortlist about six reefs for field verification.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>During</b>~14 days at sea, outside the hot season</div>
+      <ul>
+        <li>Map each shortlisted reef in high resolution to measure structure and exposure.</li>
+        <li>Run on-board heat-tolerance tests on coral from each site to find the hardiest colonies.</li>
+        <li>Survey fish, coral, disease, and seaweed with AI-annotated imagery, and sample eDNA for species cameras miss.</li>
+        <li>Install temperature, light, and turbidity loggers that stay behind for year-round monitoring.</li>
+        <li>Train local teams on the monitoring routine before the ship leaves.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>After</b>Ongoing, with a 1-year review</div>
+      <ul>
+        <li>Select the final two or three restoration sites and the heat-tolerant colonies to propagate.</li>
+        <li>Run a response playbook tied to heat alerts: watch, prepare, protect, and rescue (below).</li>
+        <li>Publish open data and a public explainer; bring students and fishers into monitoring.</li>
+        <li>Review after one year: survival by site, species, and genotype, and adjust before scaling.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="playbook">
+  <span class="sec-tag">Prevention</span>
+  <h2>A response playbook, set before the heat arrives</h2>
+  <p>Florida's hardest lesson was timing. Every action here is triggered by NOAA heat-stress levels [4], so the team acts on a forecast, not on bleached coral.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Heat alert</th><th>What it means</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Watch</td><td>Water warming above normal</td><td>Increase monitoring; check loggers and disease surveys weekly.</td></tr>
+        <tr><td>Warning</td><td>Bleaching possible</td><td>Pause new planting; move or shade nursery corals now, before stress builds.</td></tr>
+        <tr><td>Level 1 (4+ °C-weeks)</td><td>Reef-wide bleaching likely</td><td>Bleaching surveys; ask partners to ease local fishing and runoff pressure.</td></tr>
+        <tr><td>Level 2+ (8+ °C-weeks)</td><td>Mortality of sensitive corals expected</td><td>Rescue the most valuable genotypes to protected nurseries; record which colonies survive, since survivors are the next generation's stock.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:36px;font-size:1.2rem">Planning targets</h3>
+  <p class="cite" style="margin-top:4px">Illustrative targets.</p>
+  <div class="targets">
+    <div class="target"><div class="num">~6</div><div class="lbl">Shortlisted reefs verified in the field</div></div>
+    <div class="target"><div class="num">2–3</div><div class="lbl">Final restoration sites</div></div>
+    <div class="target"><div class="num">365 days</div><div class="lbl">Of continuous temperature and water data per site</div></div>
+    <div class="target"><div class="num">10+ yrs</div><div class="lbl">Local stewardship commitment per site</div></div>
+  </div>
+</section>
+
+<section id="success">
+  <span class="sec-tag">Measuring success</span>
+  <h2>How we'll know it worked</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Measure</th></tr></thead>
+      <tbody>
+        <tr><td>Did screening pick better sites?</td><td>Restored coral survives longer at chosen sites than at comparison sites through the next heat event.</td></tr>
+        <tr><td>Did the heat tests predict survival?</td><td>Colonies that scored as heat-tolerant on the boat outlived the others in the water.</td></tr>
+        <tr><td>Did the playbook work?</td><td>Actions happened before stress peaked, not after.</td></tr>
+        <tr><td>Will it last?</td><td>Local teams run monitoring independently after the first year.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="risks">
+  <span class="sec-tag">Risks</span>
+  <h2>What could go wrong, and the plan for each</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Even refuges get overwhelmed</td><td>Spread risk across several sites and refuge types; don't bet on one reef.</td></tr>
+        <tr><td>Heat-tolerant coral trades off other traits</td><td>Keep genetic diversity; track growth and disease, not only heat survival.</td></tr>
+        <tr><td>Local stewardship fades</td><td>Fund local roles, not just the expedition; choose partners with long-term mandates.</td></tr>
+        <tr><td>Moving coral spreads disease</td><td>Quarantine and health checks before any transfer between sites.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="why">
+  <span class="sec-tag">Why it matters</span>
+  <h2>Restore where the patient can recover</h2>
+  <p>
+    Restoration resources are scarce, and every coral planted in the wrong place is a loss twice over.
+    Choosing sites with the same care a transplant team chooses a recipient, then treating the conditions
+    that would undo the work, is how restoration stops being a gesture and starts being a recovery.
+  </p>
+</section>
+
+<section id="sources" class="sources">
+  <span class="sec-tag">Sources</span>
+  <h2 style="font-size:1.4rem">References</h2>
+  <ol>
+    <li><a href="https://www.datocms-assets.com/160225/1777379568-ox-2025-annual-report-16x9-06-pages_highres.pdf" target="_blank" rel="noopener">OceanX 2025 Annual Report</a>: Cabo Verde: Digital Deep and the Around Africa Expedition.</li>
+    <li><a href="https://www.climate.gov/news-features/event-tracker/future-coral-restoration-florida-keys-after-unprecedented-marine-heat" target="_blank" rel="noopener">The future of coral restoration in the Florida Keys after the 2023 marine heatwave</a>, NOAA Climate.gov.</li>
+    <li><a href="https://www.nesdis.noaa.gov/news/worlds-fourth-mass-coral-bleaching-event-likely-ended-2025" target="_blank" rel="noopener">World's fourth mass coral bleaching event likely ended in 2025</a>, NOAA.</li>
+    <li><a href="https://coralreefwatch.noaa.gov/product/5km/methodology.php" target="_blank" rel="noopener">Coral Reef Watch methodology: degree heating weeks and alert levels</a>, NOAA.</li>
+    <li><a href="https://oceanservice.noaa.gov/facts/coralreef-climate.html" target="_blank" rel="noopener">How does climate change affect coral reefs?</a>, NOAA Ocean Service.</li>
+    <li><a href="https://oceanographicmagazine.com/news/reef-relief/" target="_blank" rel="noopener">Scientists map 165,000 km² of climate-resilient coral</a>, Oceanographic, on Zawada et al., June 2026.</li>
+    <li><a href="https://aslopubs.onlinelibrary.wiley.com/doi/10.1002/lom3.10555" target="_blank" rel="noopener">The Coral Bleaching Automated Stress System (CBASS)</a>, <i>Limnology and Oceanography: Methods</i>, 2023.</li>
+    <li><a href="https://phys.org/news/2014-04-coral-reefs-mozambique-channel-candidate.html" target="_blank" rel="noopener">Coral reefs of the Mozambique Channel a leading candidate for saving marine diversity</a>, Phys.org, on McClanahan et al.</li>
+    <li><a href="https://www.afhu.org/2025/10/03/gulf-of-aqaba-corals/" target="_blank" rel="noopener">Gulf of Aqaba corals are surviving increased sea temperatures</a>, on Kochman and Fine, <i>Science of the Total Environment</i>, 2025.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Written by Sungwon Park as a mission-planning concept. Not affiliated with or endorsed by OceanX or any organization named here.</p>
+    <p style="margin-top:10px"><a href="mission-deepsea.html">← Mission 03: the deep seafloor</a> &nbsp;·&nbsp; <a href="./">The ocean's vital signs</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
