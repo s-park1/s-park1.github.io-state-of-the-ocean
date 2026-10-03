@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mission concept by Sungwon Park: predicting where invasive lionfish will spread next, and planning an expedition to test the prediction.">
+<title>Lionfish Front Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a mission brief. Deep-water header band, then a paper-white dossier read top to bottom,
+     with a running "planning targets" rail and one diagram of the predict-and-test loop.
+     Same family as State of the Ocean: same faces, same healthy/warning pair. */
+  :root{
+    --abyss:#081E2C;
+    --deep:#123C52;
+    --twilight:#2E6E7E;
+    --sunlit:#8FCFC9;
+    --paper:#F4FAF8;
+    --panel:#E4F1EE;
+    --ink:#0B2430;
+    --muted:#43606B;
+    --foam:#EAF6F4;
+    --healthy:#2F9E77;
+    --warning:#C9512A;
+    --line:rgba(11,36,48,.16);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+  h1,h2,h3{font-family:var(--font-display);text-wrap:balance;font-weight:600}
+  a{color:var(--twilight)}
+  a:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  .wrap{max-width:780px;margin:0 auto;padding-inline:20px}
+
+  /* top nav */
+  .nav{background:var(--abyss);color:var(--foam);font-size:.9rem}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding-block:14px}
+  .nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .nav a:hover{text-decoration:underline}
+  .nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .nav .here{opacity:.7;font-weight:400}
+
+  /* header band */
+  header.band{background:linear-gradient(to bottom,var(--abyss),var(--deep));color:var(--foam);padding-block:64px 56px}
+  .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sunlit)}
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.08;margin-top:14px;max-width:18ch}
+  header .lede{font-size:1.15rem;margin-top:20px;max-width:58ch;opacity:.95}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--font-mono);font-size:.8rem;color:var(--sunlit)}
+
+  /* concept notice */
+  .notice{margin-top:-28px;position:relative}
+  .notice .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;font-size:.98rem}
+  .notice b{display:block;margin-bottom:4px}
+
+  section{padding-block:52px 8px}
+  section h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin-bottom:14px}
+  .sec-tag{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+  p{max-width:66ch}
+  p + p{margin-top:12px}
+
+  /* figures row */
+  .figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:22px}
+  .fig{border-top:3px solid var(--warning);padding-top:10px}
+  .fig .num{font-family:var(--font-display);font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .fig .lbl{font-size:.9rem;color:var(--muted);margin-top:4px}
+  .cite{font-size:.85rem;color:var(--muted);margin-top:12px}
+
+  /* callouts */
+  .callout{border-left:4px solid var(--healthy);background:var(--panel);padding:14px 18px;margin-top:20px;max-width:66ch;border-radius:0 6px 6px 0}
+  .callout b{display:block;margin-bottom:4px}
+
+  /* diagram */
+  .diagram{margin-top:24px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}
+  .diagram svg{display:block;width:100%;min-width:600px;height:auto}
+  .diagram .node-t{font-family:var(--font-body);font-size:15px;font-weight:700;fill:var(--ink)}
+  .diagram .node-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .diagram .center-t{font-family:var(--font-display);font-size:16px;font-weight:600;fill:var(--ink)}
+  .caption{font-size:.9rem;color:var(--muted);margin-top:10px;max-width:66ch}
+
+  /* phases */
+  .phases{display:grid;gap:16px;margin-top:22px}
+  .phase{display:grid;grid-template-columns:150px 1fr;gap:18px;border-top:1px solid var(--line);padding-top:16px}
+  .phase .when{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+  .phase .when b{display:block;font-family:var(--font-display);font-size:1.15rem;color:var(--ink);margin-bottom:2px}
+  .phase ul{padding-left:18px;display:grid;gap:6px}
+  .phase li{max-width:60ch}
+  @media(max-width:600px){.phase{grid-template-columns:1fr;gap:6px}}
+
+  /* targets */
+  .targets{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .target{background:var(--panel);border-radius:6px;padding:14px 16px}
+  .target .num{font-family:var(--font-mono);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .target .lbl{font-size:.9rem;color:var(--muted)}
+
+  /* tables */
+  .table-wrap{overflow-x:auto;margin-top:20px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+  th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td:first-child{font-weight:700;width:30%}
+
+  /* sources + footer */
+  .sources ol{padding-left:20px;display:grid;gap:6px;font-size:.92rem;max-width:66ch}
+  footer{margin-top:56px;background:var(--abyss);color:var(--foam);padding-block:36px}
+  footer a{color:var(--foam);font-weight:700}
+  footer p{max-width:60ch}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site">
+  <div class="wrap">
+    <a href="./">State of the Ocean</a>
+    <div class="links">
+      <a href="./">Vital signs</a>
+      <span class="here">Mission concept</span>
+    </div>
+  </div>
+</nav>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Mission concept 01 · Invasive species</span>
+    <h1>Find the lionfish front before it moves.</h1>
+    <p class="lede">
+      Invasive lionfish are spreading along Brazil's coast faster than managers can remove them.
+      This mission predicts where they will establish next, then sends a ship to test that
+      prediction, so limited removal effort goes where it will do the most good.
+    </p>
+    <div class="meta">
+      <span>Region: southwestern Atlantic, Brazil</span>
+      <span>Planned length: ~10 days at sea</span>
+      <span>Author: Sungwon Park</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap notice">
+  <div class="box">
+    <b>This is a planning exercise, not an expedition that happened.</b>
+    It shows how I would plan the data collection for a mission like this. The approach is modeled on
+    OceanX's 2025 Cabo Verde: Digital Deep expedition, which mapped seafloor complexity to show where
+    coral communities can thrive and used AI to identify species and habitats in real time. Here, the
+    same tools ask the opposite question: where will an invader thrive?
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="problem">
+  <span class="sec-tag">The diagnosis</span>
+  <h2>An invasion with a moving edge</h2>
+  <p>
+    Lionfish are Indo-Pacific predators with no natural control in the Atlantic. After overrunning
+    the Caribbean, they reached Brazil. Every new reef they settle loses small native fish, and
+    once a population is established, removal becomes a permanent job.
+  </p>
+  <div class="figures">
+    <div class="fig"><div class="num">18+</div><div class="lbl">Marine protected areas invaded, 2020–2024</div></div>
+    <div class="fig"><div class="num">4,000 km</div><div class="lbl">Span of coastline those areas cover</div></div>
+    <div class="fig"><div class="num">88%</div><div class="lbl">Of invaded areas with no regular culling</div></div>
+    <div class="fig"><div class="num">+25</div><div class="lbl">More protected areas projected within 10 years</div></div>
+  </div>
+  <p class="cite">Figures from a 2025 study of lionfish spread through southwestern Atlantic protected areas [1].</p>
+  <p style="margin-top:18px">
+    The constraint is the same one a hospital faces in an outbreak: there isn't enough staff to
+    check everywhere. Removal effort is finite, so the question that matters most is where the
+    invader will show up next. Answer that early and managers can act while a population is still small.
+  </p>
+</section>
+
+<section id="approach">
+  <span class="sec-tag">The approach</span>
+  <h2>Borrow the coral playbook, and flip it</h2>
+  <p>
+    At Cabo Verde, OceanX used high-resolution seafloor maps to measure how complex the bottom is,
+    a strong clue to where coral communities can thrive. Lionfish also choose habitat by its
+    structure. A study of Caribbean reefs found they gather around large crevices and overhangs, at
+    scales of roughly 30 to 120 cm, while avoiding fine-grained clutter [2].
+  </p>
+  <div class="callout">
+    <b>Measure at the right resolution</b>
+    In the same study, a single overall roughness score did not separate lionfish sites from the rest
+    of the reef [2]. Their preference only appeared when complexity was measured at several scales.
+    Like a blood test, the reading is only useful at the right resolution, so the model here
+    measures structure at several scales, not one.
+  </div>
+  <p style="margin-top:18px">
+    The habitat model combines that multi-scale seafloor structure with depth, bottom temperature and
+    salinity (which the 2025 study identified as key predictors of spread [1]), and distance from
+    known sightings. Its output is a ranked map: every unsurveyed patch of reef scored from most to
+    least likely to hold lionfish.
+  </p>
+
+  <div class="diagram" role="img" aria-label="A loop with five steps: map the seafloor, predict suitable habitat, test with ROV imagery and eDNA, act by giving managers a priority map, and retrain the model with what was found.">
+    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#43606B"/>
+        </marker>
+      </defs>
+      <circle cx="360" cy="180" r="62" fill="#E4F1EE" stroke="#2E6E7E" stroke-width="1.5"/>
+      <text x="360" y="174" text-anchor="middle" class="center-t">Habitat</text>
+      <text x="360" y="196" text-anchor="middle" class="center-t">model</text>
+
+      <rect x="270" y="14" width="180" height="62" rx="6" fill="#ffffff" stroke="#123C52" stroke-width="1.5"/>
+      <text x="360" y="40" text-anchor="middle" class="node-t">1 · Map</text>
+      <text x="360" y="60" text-anchor="middle" class="node-s">Multibeam seafloor structure</text>
+
+      <rect x="516" y="106" width="190" height="62" rx="6" fill="#ffffff" stroke="#123C52" stroke-width="1.5"/>
+      <text x="611" y="132" text-anchor="middle" class="node-t">2 · Predict</text>
+      <text x="611" y="152" text-anchor="middle" class="node-s">Rank sites by suitability</text>
+
+      <rect x="470" y="270" width="210" height="72" rx="6" fill="#ffffff" stroke="#C9512A" stroke-width="1.5"/>
+      <text x="575" y="296" text-anchor="middle" class="node-t">3 · Test</text>
+      <text x="575" y="316" text-anchor="middle" class="node-s">ROV video with AI annotation</text>
+      <text x="575" y="332" text-anchor="middle" class="node-s">+ eDNA water samples</text>
+
+      <rect x="40" y="270" width="210" height="72" rx="6" fill="#ffffff" stroke="#2F9E77" stroke-width="1.5"/>
+      <text x="145" y="296" text-anchor="middle" class="node-t">4 · Act</text>
+      <text x="145" y="316" text-anchor="middle" class="node-s">Priority map for</text>
+      <text x="145" y="332" text-anchor="middle" class="node-s">protected-area managers</text>
+
+      <rect x="14" y="106" width="190" height="62" rx="6" fill="#ffffff" stroke="#123C52" stroke-width="1.5"/>
+      <text x="109" y="132" text-anchor="middle" class="node-t">5 · Retrain</text>
+      <text x="109" y="152" text-anchor="middle" class="node-s">Every result improves the model</text>
+
+      <path d="M450,50 C520,55 575,75 595,104" fill="none" stroke="#43606B" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M620,170 C628,210 615,245 595,268" fill="none" stroke="#43606B" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M468,312 C400,330 320,330 252,312" fill="none" stroke="#43606B" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M125,268 C105,240 98,205 102,170" fill="none" stroke="#43606B" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M140,104 C165,75 210,55 268,48" fill="none" stroke="#43606B" stroke-width="1.5" marker-end="url(#arrow)"/>
+    </svg>
+  </div>
+  <p class="caption">The loop runs daily at sea: each night's results re-rank the next day's sites, the same way Cabo Verde's AI models were retrained during the expedition.</p>
+
+  <div class="callout">
+    <b>What is eDNA?</b>
+    Every animal sheds traces of DNA into the water. Filtering a few liters of seawater and testing it
+    for lionfish DNA shows whether one was recently nearby, even when no camera saw it. It works like a
+    blood test for the ocean: it detects the problem before it's visible.
+  </div>
+</section>
+
+<section id="plan">
+  <span class="sec-tag">Mission plan</span>
+  <h2>Before, during, and after</h2>
+  <p>Most of the work that decides whether an expedition succeeds happens before the ship leaves port.</p>
+
+  <div class="phases">
+    <div class="phase">
+      <div class="when"><b>Before</b>6 months to departure</div>
+      <ul>
+        <li>Submit research requests to Brazil early. Under the UN Law of the Sea, foreign research in a coastal state's waters needs its consent, requested at least six months ahead [4].</li>
+        <li>Partner with Brazilian universities and the managers of the invaded protected areas, so the results feed straight into their decisions.</li>
+        <li>Build the first habitat model from existing seafloor maps, temperature and salinity records, and confirmed sightings.</li>
+        <li>Pick survey sites in three tiers: high, medium, and low predicted suitability. Low-tier sites are the control; a model that's never tested where it says "no" can't be trusted.</li>
+        <li>Plan the weather window, port calls, and sample-export permits, and set up a shared dashboard for site status and results.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>During</b>~10 days at sea</div>
+      <ul>
+        <li>Map candidate areas with multibeam sonar to capture seafloor structure at several scales.</li>
+        <li>Fly ROV transects at each site, including deep reefs (roughly 30–150 m) that divers can't reach for culling [3].</li>
+        <li>Run AI image annotation on ROV video to flag lionfish and their habitat in real time.</li>
+        <li>Collect eDNA samples at every site, with clean blank samples to catch contamination.</li>
+        <li>Each night, score the day's results against the predictions and re-rank the next day's sites.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>After</b>First 30 days back</div>
+      <ul>
+        <li>Score the model: how often were high-tier sites positive compared with low-tier sites?</li>
+        <li>Deliver a ranked priority map to protected-area managers showing where removal effort pays off most.</li>
+        <li>Publish the data openly and hold a post-expedition operations review to improve the next mission.</li>
+        <li>Turn the findings into a public explainer on this site, and run sessions for local students and fishing communities.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:36px;font-size:1.2rem">Planning targets</h3>
+  <p class="cite" style="margin-top:4px">Illustrative targets for a 10-day mission, sized against the Cabo Verde expedition's scale.</p>
+  <div class="targets">
+    <div class="target"><div class="num">~30</div><div class="lbl">Survey sites across three suitability tiers</div></div>
+    <div class="target"><div class="num">3</div><div class="lbl">Independent checks per site: sonar, ROV, eDNA</div></div>
+    <div class="target"><div class="num">24 h</div><div class="lbl">From sample to updated site ranking</div></div>
+    <div class="target"><div class="num">30 days</div><div class="lbl">From return to priority map in managers' hands</div></div>
+  </div>
+</section>
+
+<section id="success">
+  <span class="sec-tag">Measuring success</span>
+  <h2>How we'll know it worked</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Measure</th></tr></thead>
+      <tbody>
+        <tr><td>Does the model predict?</td><td>Lionfish detection rate at high-tier sites is clearly higher than at low-tier sites.</td></tr>
+        <tr><td>Do the tests agree?</td><td>ROV sightings and eDNA results match at most sites; mismatches get reviewed, not ignored.</td></tr>
+        <tr><td>Was it fast enough to matter?</td><td>Results re-ranked the next day's plan at least once during the mission.</td></tr>
+        <tr><td>Did anyone use it?</td><td>Managers change where they focus removal based on the priority map.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="risks">
+  <span class="sec-tag">Risks</span>
+  <h2>What could go wrong, and the plan for each</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Permits arrive late</td><td>Apply more than six months ahead; keep backup sites inside already-approved areas.</td></tr>
+        <tr><td>Weather closes the window</td><td>Rank sites so each day's work stands alone; deep sites first when conditions allow.</td></tr>
+        <tr><td>eDNA false positives</td><td>Blank samples at every station; confirm surprising results against ROV video.</td></tr>
+        <tr><td>Model only finds what's already known</td><td>Include low-tier control sites and sites far from past sightings.</td></tr>
+        <tr><td>Too much data to use at sea</td><td>AI annotation and a nightly summary dashboard, so decisions rest on summaries, not raw video.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="why">
+  <span class="sec-tag">Why it matters</span>
+  <h2>Screening, not just treatment</h2>
+  <p>
+    Medicine learned long ago that finding a disease early beats treating it late. Invasive species
+    work the same way. A habitat model is the screening test, the ship is the follow-up exam, and the
+    priority map is the treatment plan. Run as a loop, each mission makes the next one sharper, and the
+    data, shared openly and explained plainly, helps the communities who live with the invasion act on it.
+  </p>
+</section>
+
+<section id="sources" class="sources">
+  <span class="sec-tag">Sources</span>
+  <h2 style="font-size:1.4rem">References</h2>
+  <ol>
+    <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0141113625001564" target="_blank" rel="noopener">Invasive lionfish spread through southwestern Atlantic marine protected areas</a>, <i>Marine Environmental Research</i>, 2025.</li>
+    <li><a href="https://www.nature.com/articles/s41598-018-37459-w" target="_blank" rel="noopener">Aggregating behaviour in invasive Caribbean lionfish is driven by habitat complexity</a>, <i>Scientific Reports</i>.</li>
+    <li><a href="https://royalsocietypublishing.org/doi/10.1098/rsos.170027" target="_blank" rel="noopener">Depth-dependent effects of culling: do mesophotic lionfish populations undermine current management?</a>, <i>Royal Society Open Science</i>.</li>
+    <li>United Nations Convention on the Law of the Sea, Part XIII, Article 248 (coastal-state consent for marine scientific research).</li>
+    <li><a href="https://www.datocms-assets.com/160225/1777379568-ox-2025-annual-report-16x9-06-pages_highres.pdf" target="_blank" rel="noopener">OceanX 2025 Annual Report</a>: Cabo Verde: Digital Deep.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Written by Sungwon Park as a mission-planning concept. Not affiliated with or endorsed by OceanX.</p>
+    <p style="margin-top:10px"><a href="./">← Back to the ocean's vital signs</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
