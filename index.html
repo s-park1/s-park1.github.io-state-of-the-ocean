@@ -168,6 +168,16 @@
   .sources ul{list-style:none;display:grid;gap:6px}
   .sources a{color:var(--foam)}
   .sources .note{margin-top:14px}
+
+  /* site nav, shared across all three pages */
+  .site-nav{background:var(--abyss);color:var(--foam);font-size:.9rem;position:relative;z-index:11}
+  .site-nav .inner{max-width:860px;margin:0 auto;padding:14px 24px;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between}
+  .site-nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .site-nav a:hover{text-decoration:underline}
+  .site-nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .site-nav .here{opacity:.7;font-weight:400}
+  .mission-links{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:14px}
+  .mission-links a{color:var(--ink);font-weight:700}
 </style>
 </head>
 <body>
@@ -180,6 +190,16 @@
 </div>
 
 <main id="top">
+<nav class="site-nav" aria-label="Site">
+  <div class="inner">
+    <a href="./">State of the Ocean</a>
+    <div class="links">
+      <span class="here">Vital signs</span>
+      <a href="missions.html">Mission 01: Lionfish</a>
+      <a href="mission-nitrogen.html">Mission 02: Nitrogen</a>
+    </div>
+  </div>
+</nav>
 
 <section class="hero">
   <div class="wrap">
@@ -193,7 +213,10 @@
     </p>
     <p class="byline">Created by Sungwon Park · Figures checked October 2026</p>
     <a class="dive-cue" href="#howto">Begin the descent ↓</a>
-    <p class="byline"><a href="missions.html" style="color:inherit">Mission concepts: the lionfish front and farm field to scallop bed →</a></p>
+    <div class="mission-links">
+      <a href="missions.html">Mission 01: Finding the lionfish front →</a>
+      <a href="mission-nitrogen.html">Mission 02: From farm field to scallop bed →</a>
+    </div>
   </div>
   <svg class="wave" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0,35 C100,10 200,60 300,35 C400,10 500,60 600,35 C700,10 800,60 900,35 C1000,10 1100,60 1200,35 L1200,70 L0,70 Z" fill="#5FA9AC"/>
