@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mission concept by Sungwon Park: tracing nitrogen runoff from North Carolina fields to algae blooms, lost seagrass, and the bay scallop, and forecasting the economic cost.">
+<title>Nitrogen to Scallops Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a mission brief. Deep-water header band, then a paper-white dossier read top to bottom,
+     with a running "planning targets" rail and one diagram of the predict-and-test loop.
+     Same family as State of the Ocean: same faces, same healthy/warning pair. */
+  :root{
+    --abyss:#081E2C;
+    --deep:#123C52;
+    --twilight:#2E6E7E;
+    --sunlit:#8FCFC9;
+    --paper:#F4FAF8;
+    --panel:#E4F1EE;
+    --ink:#0B2430;
+    --muted:#43606B;
+    --foam:#EAF6F4;
+    --healthy:#2F9E77;
+    --warning:#C9512A;
+    --line:rgba(11,36,48,.16);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);font-size:17px;line-height:1.6}
+  h1,h2,h3{font-family:var(--font-display);text-wrap:balance;font-weight:600}
+  a{color:var(--twilight)}
+  a:focus-visible{outline:3px solid var(--warning);outline-offset:3px}
+  .wrap{max-width:780px;margin:0 auto;padding-inline:20px}
+
+  /* top nav */
+  .nav{background:var(--abyss);color:var(--foam);font-size:.9rem}
+  .nav .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;justify-content:space-between;padding-block:14px}
+  .nav a{color:var(--foam);text-decoration:none;font-weight:700}
+  .nav a:hover{text-decoration:underline}
+  .nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  .nav .here{opacity:.7;font-weight:400}
+
+  /* header band */
+  header.band{background:linear-gradient(to bottom,var(--abyss),var(--deep));color:var(--foam);padding-block:64px 56px}
+  .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sunlit)}
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.08;margin-top:14px;max-width:18ch}
+  header .lede{font-size:1.15rem;margin-top:20px;max-width:58ch;opacity:.95}
+  .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--font-mono);font-size:.8rem;color:var(--sunlit)}
+
+  /* concept notice */
+  .notice{margin-top:-28px;position:relative}
+  .notice .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;font-size:.98rem}
+  .notice b{display:block;margin-bottom:4px}
+
+  section{padding-block:52px 8px}
+  section h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin-bottom:14px}
+  .sec-tag{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+  p{max-width:66ch}
+  p + p{margin-top:12px}
+
+  /* figures row */
+  .figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:22px}
+  .fig{border-top:3px solid var(--warning);padding-top:10px}
+  .fig .num{font-family:var(--font-display);font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .fig .lbl{font-size:.9rem;color:var(--muted);margin-top:4px}
+  .cite{font-size:.85rem;color:var(--muted);margin-top:12px}
+
+  /* callouts */
+  .callout{border-left:4px solid var(--healthy);background:var(--panel);padding:14px 18px;margin-top:20px;max-width:66ch;border-radius:0 6px 6px 0}
+  .callout b{display:block;margin-bottom:4px}
+
+  /* diagram */
+  .diagram{margin-top:24px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}
+  .diagram svg{display:block;width:100%;min-width:600px;height:auto}
+  .diagram .node-t{font-family:var(--font-body);font-size:15px;font-weight:700;fill:var(--ink)}
+  .diagram .node-s{font-family:var(--font-body);font-size:12px;fill:var(--muted)}
+  .diagram .center-t{font-family:var(--font-display);font-size:16px;font-weight:600;fill:var(--ink)}
+  .caption{font-size:.9rem;color:var(--muted);margin-top:10px;max-width:66ch}
+
+  /* phases */
+  .phases{display:grid;gap:16px;margin-top:22px}
+  .phase{display:grid;grid-template-columns:150px 1fr;gap:18px;border-top:1px solid var(--line);padding-top:16px}
+  .phase .when{font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+  .phase .when b{display:block;font-family:var(--font-display);font-size:1.15rem;color:var(--ink);margin-bottom:2px}
+  .phase ul{padding-left:18px;display:grid;gap:6px}
+  .phase li{max-width:60ch}
+  @media(max-width:600px){.phase{grid-template-columns:1fr;gap:6px}}
+
+  /* targets */
+  .targets{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .target{background:var(--panel);border-radius:6px;padding:14px 16px}
+  .target .num{font-family:var(--font-mono);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .target .lbl{font-size:.9rem;color:var(--muted)}
+
+  /* tables */
+  .table-wrap{overflow-x:auto;margin-top:20px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+  th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td:first-child{font-weight:700;width:30%}
+
+  /* sources + footer */
+  .sources ol{padding-left:20px;display:grid;gap:6px;font-size:.92rem;max-width:66ch}
+  footer{margin-top:56px;background:var(--abyss);color:var(--foam);padding-block:36px}
+  footer a{color:var(--foam);font-weight:700}
+  footer p{max-width:60ch}
+</style>
+<style>
+  .diagram svg.chain{min-width:680px}
+  .stage-t{font-family:var(--font-body);font-size:14px;font-weight:700;fill:var(--ink)}
+  .stage-s{font-family:var(--font-body);font-size:11.5px;fill:var(--muted)}
+  .probe-t{font-family:var(--font-mono);font-size:11px;fill:#2E6E7E}
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+  .split .callout{margin-top:0}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site">
+  <div class="wrap">
+    <a href="./">State of the Ocean</a>
+    <div class="links">
+      <a href="./">Vital signs</a>
+      <a href="missions.html">Mission 01</a>
+      <span class="here">Mission 02</span>
+    </div>
+  </div>
+</nav>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Mission concept 02 · Nutrient pollution</span>
+    <h1>From farm field to scallop bed.</h1>
+    <p class="lede">
+      Nitrogen washes off the land, feeds algae blooms in the estuary, clouds the water, strips oxygen,
+      and kills the seagrass that young fish and scallops need. This mission follows that chain from
+      start to finish in North Carolina, and forecasts what each bloom will cost the coast before it arrives.
+    </p>
+    <div class="meta">
+      <span>Region: Neuse River and Pamlico Sound, NC</span>
+      <span>Planned length: one bloom season, April–October</span>
+      <span>Author: Sungwon Park</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap notice">
+  <div class="box">
+    <b>This is a planning exercise, not a project that happened.</b>
+    It shows how I would plan a land-and-coast mission. Unlike Mission 01, most of the work happens from
+    shore: river sensors, small boats, drones, and satellites, with the people who farm, fish, and live
+    along the water as partners.
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="patient">
+  <span class="sec-tag">The patient</span>
+  <h2>The North Carolina bay scallop</h2>
+  <p>
+    In 1928, North Carolina led the nation in bay scallops, landing 1.4 million pounds of meat. By 2004
+    the harvest had fallen below 150 pounds [1]. The fishery has not come back: in 2025 no area met
+    the minimum abundance needed to open a season, and in 2026 there was no open season at all [2].
+  </p>
+  <div class="figures">
+    <div class="fig"><div class="num">1.4M lb</div><div class="lbl">Scallop meat landed in 1928, the most in the nation</div></div>
+    <div class="fig"><div class="num">&lt;150 lb</div><div class="lbl">Landed in 2004</div></div>
+    <div class="fig"><div class="num">16%</div><div class="lbl">Of NC seagrass lost, 2006–2020</div></div>
+    <div class="fig"><div class="num">0</div><div class="lbl">Open harvest seasons in 2025 and 2026</div></div>
+  </div>
+  <p class="cite">Sources [1], [2], [3].</p>
+  <p style="margin-top:18px">
+    Bay scallops live about 20 months and depend on high-salinity seagrass beds [1]. A single bad year
+    can wipe out a local population. That makes them an early-warning species, the way a sensitive lab
+    value flags trouble before the rest of the body shows it.
+  </p>
+</section>
+
+<section id="differential">
+  <span class="sec-tag">Differential diagnosis</span>
+  <h2>More than one cause, so measure each one</h2>
+  <p>
+    A good diagnosis doesn't blame the first suspect. The scallop decline has several documented causes,
+    and nitrogen is connected to some of them but not all. The mission's job is to estimate how much of
+    the decline nitrogen explains, so money and effort go to the cause that matters most.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Suspected cause</th><th>What's known</th><th>How the mission tests it</th></tr></thead>
+      <tbody>
+        <tr><td>Harmful algae (red tide)</td><td>A 1987–88 red tide killed about 21% of adult scallops in Bogue and Back sounds; the next spring, juveniles were at 2% of normal [1].</td><td>Satellite and boat monitoring of bloom species, matched to scallop surveys.</td></tr>
+        <tr><td>Seagrass loss</td><td>NC lost at least 16,129 acres of seagrass from 2006 to 2020. Water quality, especially nutrient and sediment pollution, is among the causes [3].</td><td>Water clarity sensors and drone mapping of seagrass beds against nitrogen levels.</td></tr>
+        <tr><td>Low oxygen</td><td>Nitrogen-fed blooms in the Neuse estuary have caused low oxygen and extensive fish kills since the 1980s [4].</td><td>Continuous oxygen sensors near scallop and nursery habitat.</td></tr>
+        <tr><td>Predators and disease</td><td>Cownose ray predation rose from the mid-1990s [1]; a newly identified parasite infects about 20% of NC scallops [5].</td><td>Scallop sampling for infection and predation, to separate these from water-quality effects.</td></tr>
+        <tr><td>Storms</td><td>Hurricanes in the 1990s damaged habitat and shifted salinity [1].</td><td>Storm-triggered sampling, which also captures the biggest nitrogen pulses.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="chain">
+  <span class="sec-tag">The approach</span>
+  <h2>Follow the nitrogen, measure every link</h2>
+  <p>
+    The mission treats the watershed and estuary as one system and puts a measurement at every step,
+    so a change at the start of the chain can be traced to its effect at the end.
+  </p>
+
+  <div class="diagram" role="img" aria-label="A chain of five stages from left to right: watershed sources, river delivery, estuary bloom, habitat damage, and economic impact, each with the measurement taken at that stage.">
+    <svg class="chain" viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#43606B"/>
+        </marker>
+      </defs>
+      <g>
+        <rect x="10" y="40" width="152" height="96" rx="6" fill="#ffffff" stroke="#2F9E77" stroke-width="1.5"/>
+        <text x="86" y="68" text-anchor="middle" class="stage-t">Watershed</text>
+        <text x="86" y="90" text-anchor="middle" class="stage-s">Fields, livestock,</text>
+        <text x="86" y="106" text-anchor="middle" class="stage-s">towns, rain</text>
+        <text x="86" y="176" text-anchor="middle" class="probe-t">land use + rainfall</text>
+      </g>
+      <g>
+        <rect x="192" y="40" width="152" height="96" rx="6" fill="#ffffff" stroke="#2E6E7E" stroke-width="1.5"/>
+        <text x="268" y="68" text-anchor="middle" class="stage-t">Rivers</text>
+        <text x="268" y="90" text-anchor="middle" class="stage-s">Nitrogen carried</text>
+        <text x="268" y="106" text-anchor="middle" class="stage-s">to the coast</text>
+        <text x="268" y="176" text-anchor="middle" class="probe-t">nitrate sensors</text>
+      </g>
+      <g>
+        <rect x="374" y="40" width="152" height="96" rx="6" fill="#ffffff" stroke="#C9512A" stroke-width="1.5"/>
+        <text x="450" y="68" text-anchor="middle" class="stage-t">Estuary</text>
+        <text x="450" y="90" text-anchor="middle" class="stage-s">Blooms, murky water,</text>
+        <text x="450" y="106" text-anchor="middle" class="stage-s">low oxygen</text>
+        <text x="450" y="176" text-anchor="middle" class="probe-t">satellite + O₂ sensors</text>
+      </g>
+      <g>
+        <rect x="556" y="40" width="152" height="96" rx="6" fill="#ffffff" stroke="#C9512A" stroke-width="1.5"/>
+        <text x="632" y="68" text-anchor="middle" class="stage-t">Habitat</text>
+        <text x="632" y="90" text-anchor="middle" class="stage-s">Seagrass, scallops,</text>
+        <text x="632" y="106" text-anchor="middle" class="stage-s">fish nurseries</text>
+        <text x="632" y="176" text-anchor="middle" class="probe-t">drones + AI imagery</text>
+      </g>
+      <g>
+        <rect x="738" y="40" width="152" height="96" rx="6" fill="#ffffff" stroke="#123C52" stroke-width="1.5"/>
+        <text x="814" y="68" text-anchor="middle" class="stage-t">Economy</text>
+        <text x="814" y="90" text-anchor="middle" class="stage-s">Harvests, closures,</text>
+        <text x="814" y="106" text-anchor="middle" class="stage-s">tourism</text>
+        <text x="814" y="176" text-anchor="middle" class="probe-t">landings + visitor data</text>
+      </g>
+      <path d="M164,88 L188,88" stroke="#43606B" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <path d="M346,88 L370,88" stroke="#43606B" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <path d="M528,88 L552,88" stroke="#43606B" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <path d="M710,88 L734,88" stroke="#43606B" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <line x1="86" y1="140" x2="86" y2="160" stroke="#8FCFC9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="268" y1="140" x2="268" y2="160" stroke="#8FCFC9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="450" y1="140" x2="450" y2="160" stroke="#8FCFC9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="632" y1="140" x2="632" y2="160" stroke="#8FCFC9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="814" y1="140" x2="814" y2="160" stroke="#8FCFC9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="450" y="222" text-anchor="middle" class="stage-s">What we measure at each stage</text>
+    </svg>
+  </div>
+  <p class="caption">Two linked models sit on top of this chain: one forecasts blooms and low oxygen from river nitrogen and weather, the other turns that forecast into expected damage to habitat and the coastal economy.</p>
+
+  <p style="margin-top:20px">
+    Forecasts like this already work. NOAA predicts the size of the Gulf dead zone each summer from
+    the nitrogen the Mississippi delivers. In 2025 it measured 4,402 square miles, against a goal of
+    under 1,900 square miles by 2035 [6], and more than 70% of that nitrogen comes from agriculture [7].
+    North Carolina researchers already forecast summer low oxygen in the Neuse estuary from river flow [8].
+    This mission connects those forecasts to the species and businesses that feel the damage.
+  </p>
+</section>
+
+<section id="economics">
+  <span class="sec-tag">The economics</span>
+  <h2>Putting a price on a bloom</h2>
+  <p>Two studies show why the impact model matters, and why it has to be more than a simple formula.</p>
+  <div class="split">
+    <div class="callout">
+      <b>Low oxygen changes seafood prices</b>
+      A Duke and NOAA study of 1990–2010 found the Gulf dead zone pushes up the price of large brown shrimp
+      relative to small ones, because hypoxia changes what fishers catch [9]. The damage shows up in markets,
+      not just in the water.
+    </div>
+    <div class="callout">
+      <b>Fear can cost more than the bloom</b>
+      Florida's 2018 red tide cost an estimated $2.7 billion in tourism revenue. Losses weren't proportional
+      to algae levels: some of the largest daily losses came at low concentrations, which the authors link
+      to public perception [10]. Clear, accurate public information is itself an economic tool.
+    </div>
+  </div>
+</section>
+
+<section id="plan">
+  <span class="sec-tag">Mission plan</span>
+  <h2>Before, during, and after</h2>
+  <div class="phases">
+    <div class="phase">
+      <div class="when"><b>Before</b>Winter, 4–6 months out</div>
+      <ul>
+        <li>Partner with NC environmental and fisheries agencies, university estuary labs, county extension offices, farm groups, and fishing communities.</li>
+        <li>Gather existing records: river flow and water quality, rainfall, land use, seagrass surveys, scallop surveys, landings, and tourism data.</li>
+        <li>Agree on access with landowners and on how farm data is shared. Trust comes first; the goal is targeted help, not blame.</li>
+        <li>Build the first bloom forecast and impact model from past seasons, and set up a shared dashboard for agencies and partners.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>During</b>April–October</div>
+      <ul>
+        <li>Run continuous nitrate, oxygen, and water clarity sensors at river mouths and over scallop and seagrass habitat.</li>
+        <li>Sample intensively after heavy rain, when most nitrogen reaches the estuary in a few days.</li>
+        <li>Track blooms with satellite imagery and boat sampling; map seagrass and scallop beds with drones, using AI to classify imagery.</li>
+        <li>Invite fishers and residents to report blooms and fish kills, adding eyes on the water between sensors.</li>
+        <li>Issue a forecast every week: expected bloom risk, low-oxygen risk, and estimated economic exposure for the next two weeks.</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="when"><b>After</b>First 60 days</div>
+      <ul>
+        <li>Score each forecast against what happened, and retrain both models.</li>
+        <li>Estimate how much of the scallop and seagrass decline nitrogen explains, with honest uncertainty ranges.</li>
+        <li>Map the fields and streams where reducing nitrogen would protect the most habitat, so practices and funding can be targeted precisely.</li>
+        <li>Publish open data, hold a post-season review, and share results in plain language with farming and fishing communities alike.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:36px;font-size:1.2rem">Planning targets</h3>
+  <p class="cite" style="margin-top:4px">Illustrative targets for one bloom season.</p>
+  <div class="targets">
+    <div class="target"><div class="num">2 weeks</div><div class="lbl">Forecast lead time for bloom and low-oxygen risk</div></div>
+    <div class="target"><div class="num">5+</div><div class="lbl">Storm events sampled from field to estuary</div></div>
+    <div class="target"><div class="num">Weekly</div><div class="lbl">Forecast bulletins with estimated economic exposure</div></div>
+    <div class="target"><div class="num">60 days</div><div class="lbl">From season's end to targeting map and public report</div></div>
+  </div>
+</section>
+
+<section id="success">
+  <span class="sec-tag">Measuring success</span>
+  <h2>How we'll know it worked</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Question</th><th>Measure</th></tr></thead>
+      <tbody>
+        <tr><td>Did the forecasts hold up?</td><td>Predicted bloom and low-oxygen risk matched what sensors and satellites observed, inside the stated uncertainty.</td></tr>
+        <tr><td>Is the diagnosis clearer?</td><td>A defensible estimate, with ranges, of how much nitrogen explains seagrass and scallop loss compared with other causes.</td></tr>
+        <tr><td>Did people use it?</td><td>Agencies, extension offices, or farmers use the targeting map to decide where to act.</td></tr>
+        <tr><td>Did the public understand it?</td><td>Forecast bulletins reached coastal businesses and residents in plain language before blooms peaked.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="risks">
+  <span class="sec-tag">Risks</span>
+  <h2>What could go wrong, and the plan for each</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Farmers feel blamed and opt out</td><td>Bring farm groups and extension offices in from the start; frame results as targeted help, and share credit for improvements.</td></tr>
+        <tr><td>Several causes overlap</td><td>Measure each suspected cause directly and report ranges, not a single number.</td></tr>
+        <tr><td>Sensors foul or fail in summer</td><td>Scheduled cleaning, spare units, and satellite data to fill gaps.</td></tr>
+        <tr><td>Economic data is incomplete</td><td>Partner with resource economists; label estimates clearly as estimates.</td></tr>
+        <tr><td>Forecasts cause panic</td><td>Pair every warning with clear, local guidance on what is and isn't affected.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="why">
+  <span class="sec-tag">Why it matters</span>
+  <h2>Treat the cause, not just the symptom</h2>
+  <p>
+    Restocking scallops without fixing the water is treating a symptom. This mission connects the
+    symptom on the coast to its cause on land, puts a number on what it costs, and shows exactly where
+    action will help most. It also brings together communities that rarely sit at the same table: the
+    people who farm the watershed and the people who fish the sound. Both depend on the same water.
+  </p>
+</section>
+
+<section id="sources" class="sources">
+  <span class="sec-tag">Sources</span>
+  <h2 style="font-size:1.4rem">References</h2>
+  <ol>
+    <li><a href="https://ncseagrant.ncsu.edu/coastwatch/return-of-the-bay-scallops/" target="_blank" rel="noopener">Return of the Bay Scallops</a>, North Carolina Sea Grant, Coastwatch.</li>
+    <li><a href="https://www.deq.nc.gov/about/divisions/marine-fisheries/managing-fisheries/fishery-management-plans/bay-scallop-management-information" target="_blank" rel="noopener">Bay Scallop Management Information</a>, NC Division of Marine Fisheries.</li>
+    <li><a href="https://apnep.nc.gov/news/press-releases/2026/06/17/updated-analysis-shows-north-carolinas-seagrass-habitat-still-declining" target="_blank" rel="noopener">Updated analysis shows North Carolina's seagrass habitat still declining</a>, Albemarle-Pamlico National Estuary Partnership, June 2026.</li>
+    <li><a href="https://www.deq.nc.gov/about/divisions/water-resources/water-planning/nonpoint-source-planning/neuse-nutrient-strategy" target="_blank" rel="noopener">Neuse Nutrient Strategy</a>, NC Department of Environmental Quality.</li>
+    <li><a href="https://uncw.edu/news/2024/07/new-parasite-found-in-nc-scallops" target="_blank" rel="noopener">New Parasite Found in N.C. Scallops</a>, UNC Wilmington, July 2024.</li>
+    <li><a href="https://www.noaa.gov/news-release/gulf-of-america-dead-zone-below-average-scientists-find" target="_blank" rel="noopener">Gulf "dead zone" below average, scientists find</a>, NOAA, 2025.</li>
+    <li><a href="https://water.usgs.gov/nawqa/sparrow/gulf_findings/primary_sources.html" target="_blank" rel="noopener">Primary sources of nutrients delivered to the Gulf</a>, USGS SPARROW.</li>
+    <li><a href="https://ncseagrant.ncsu.edu/currents/2021/06/summer-2021-hypoxia-forecast-fish-kills-less-likely-than-usual-in-the-neuse-river-estuary/" target="_blank" rel="noopener">Summer 2021 hypoxia forecast for the Neuse River Estuary</a>, NC Sea Grant.</li>
+    <li><a href="https://coastalscience.noaa.gov/news/price-of-shrimp-affected-by-gulf-of-mexico-dead-zone/" target="_blank" rel="noopener">Price of shrimp impacted by Gulf "dead zone"</a>, NOAA NCCOS (Smith et al., <i>PNAS</i>, 2017).</li>
+    <li><a href="https://www.sciencedirect.com/science/article/pii/S0301479723025999" target="_blank" rel="noopener">Non-linear impacts of harmful algae blooms on the coastal tourism economy</a>, <i>Journal of Environmental Management</i>.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Written by Sungwon Park as a mission-planning concept. Not affiliated with or endorsed by OceanX or any agency named here.</p>
+    <p style="margin-top:10px"><a href="missions.html">← Mission 01: the lionfish front</a> &nbsp;·&nbsp; <a href="./">The ocean's vital signs</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
